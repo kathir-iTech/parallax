@@ -1,0 +1,14 @@
+node_modules/
+dist/
+.env*
+!.env.example
+.vercel/
+coverage/
+*.local
+test-results/
+playwright-report/
+private/
+*.tsbuildinfo
+.agents/
+skills-lock.json
+!.env.example
