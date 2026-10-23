@@ -1479,7 +1479,7 @@ html {
   overflow: hidden;
   isolation: isolate;
 }
-.real-map {
+.map-stage .real-map {
   position: absolute;
   inset: 0;
 }

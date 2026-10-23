@@ -4,6 +4,8 @@ Checked 23 October 2026. Each evidence class below is kept separate.
 
 ## Experience rebuild — v1.1.0
 
+The v1.1.1 layout patch fixes a late-loaded MapLibre positioning rule that could leave an undersized map canvas. The map regression now asserts matching frame/container/canvas dimensions on load and at four viewport widths, alongside pan/zoom and marker-identity checks.
+
 - TypeScript and the production build passed. The map library and worker are deferred until the explorer is opened; the large MapLibre chunk remains an explicit tradeoff.
 - Sixteen unit/HTTP tests passed, including backward-compatible preference imports and validation of explicit balance.
 - Six functional browser cases and an additional transition-contrast case passed against the real React UI and MapLibre renderer with synthetic backend fixtures and a deterministic tile-free style. These use no provider secrets or Qloo requests.

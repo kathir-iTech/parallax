@@ -26,6 +26,8 @@ The original selection effect removed and recreated every marker. The replacemen
 
 Resize observations ignore zero or unchanged dimensions and coalesce updates to an animation frame. Listener, observer, frame, marker, and map lifecycles have explicit cleanup. Pixel density is capped at 2 to limit work on high-density screens. Style failures and WebGL context loss leave the place list and directions usable; retry and context restoration have dedicated paths.
 
+The map container's positioning rule has greater specificity than MapLibre's late-loaded default stylesheet. Browser checks compare frame, container, and canvas dimensions before interaction and after each tested resize, guarding against a partially filled map frame.
+
 The implementation fixes observed marker churn. It does not establish a universal cause for every reported freeze or a frame-rate guarantee on every device.
 
 ## Reproducible browser checks

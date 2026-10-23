@@ -107,6 +107,24 @@ async function openMap(page: Page) {
   await expect(page.locator('.real-map[data-map-state="ready"]')).toBeVisible();
   await expect(page.locator(".place-marker")).toHaveCount(8);
   await page.waitForTimeout(750); // Initial camera animation must settle before assertions.
+  await expectMapFillsFrame(page);
+}
+async function expectMapFillsFrame(page: Page) {
+  await expect
+    .poll(() =>
+      page.evaluate(() => {
+        const frame = document.querySelector<HTMLElement>(".map-stage")!;
+        const map = document.querySelector<HTMLElement>(".real-map")!;
+        const canvas =
+          document.querySelector<HTMLCanvasElement>(".maplibregl-canvas")!;
+        return [
+          Math.abs(frame.clientHeight - map.clientHeight),
+          Math.abs(frame.clientWidth - map.clientWidth),
+          Math.abs(map.clientHeight - canvas.clientHeight),
+        ];
+      }),
+    )
+    .toEqual([0, 0, 0]);
 }
 const center = (page: Page) =>
   page.locator(".real-map").getAttribute("data-map-center");
@@ -287,6 +305,7 @@ test("30 selections preserve marker identity; pan, zoom, resize and view switche
   for (const width of [390, 1440, 768, 1280]) {
     await page.setViewportSize({ width, height: 900 });
     await expect(page.locator(".real-map")).toBeVisible();
+    await expectMapFillsFrame(page);
     expect(
       await page.evaluate(
         () => document.documentElement.scrollWidth <= innerWidth,
