@@ -16,9 +16,9 @@ Answers update locally without further Qloo calls. Refreshing evidence or search
 
 The entry illustration is original SVG artwork rather than a stock venue photograph. Provider photographs remain separate, with honest loading and unavailable states. Primary reading copy is 16–20px; smaller supporting labels are used sparingly. Comparison cards have large click targets and factual descriptions.
 
-Entry artwork has brief arrival animations. Discovery uses an indeterminate animation rather than an invented percentage. The comparison scene enters once per pair, and retained shortlist items move to their new positions. Settled results stay still. CSS animation, shortlist motion, scrolling, and map camera animation respect reduced-motion preferences.
+Entry artwork has brief arrival animations. Discovery uses an indeterminate animation rather than an invented percentage. The comparison scene enters once per pair, and retained shortlist items move to their new positions. Text stays opaque while moving, and the modal backdrop animates independently from its content. Settled results stay still. CSS animation, shortlist motion, scrolling, and map camera animation respect reduced-motion preferences.
 
-The map library, styles, and worker load only when the explorer is first opened. Geographic rendering is released when the explorer closes or the connections plot opens. Camera state is retained and restored when returning. Ordinary selection and answer updates preserve the camera; recentering is an explicit action.
+The map library, styles, and worker load only when the explorer is first opened. Geographic rendering is released when the explorer closes or the connections plot opens. Map center and zoom are retained and restored when returning. Ordinary selection and answer updates preserve the camera; recentering is an explicit action.
 
 ## Map repairs
 
@@ -40,6 +40,7 @@ The cases cover:
 - Distinct both/neither behavior and reversible veto removal.
 - Style failure with usable directions and candidate selection, retry, and actual WebGL context loss/restoration through the test browser's extension.
 - Reduced-motion entry and recoverable discovery failure.
+- Accessible text contrast at the midpoint of actual scene and dialog animations.
 
 The browser uses headless Chromium with software WebGL in automated checks. This does not establish performance on the owner's physical GPU. Separate live checks must verify the deployed browser → API → Qloo → normalized evidence → decision → rendered result journey and the actual external map style. Their observed results belong in the release verification record.
 

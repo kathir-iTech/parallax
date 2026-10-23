@@ -1,6 +1,8 @@
 import { test, expect, type Page } from "@playwright/test";
+import { createRequire } from "node:module";
 import { advise } from "../core/engine.ts";
 import type { Evidence } from "../core/types.ts";
+const require = createRequire(import.meta.url);
 
 // Deliberately synthetic. No provider data, credentials, or live Qloo traffic.
 function fixture(): Evidence {
@@ -405,4 +407,49 @@ test("reduced motion and failed discovery retain readable usable controls", asyn
   await expect(
     page.getByRole("button", { name: "Find my places", exact: true }),
   ).toBeEnabled();
+});
+
+test("text retains accessible contrast midway through scene and dialog animations", async ({
+  page,
+}) => {
+  await page.addInitScript(() => {
+    document.addEventListener("animationstart", (event) => {
+      if (!(event.target instanceof Element)) return;
+      for (const animation of event.target.getAnimations()) {
+        const timing = animation.effect?.getTiming();
+        if (
+          timing &&
+          timing.iterations !== Infinity &&
+          typeof timing.duration === "number"
+        ) {
+          animation.pause();
+          animation.currentTime = timing.duration / 2;
+        }
+      }
+    });
+  });
+  await setup(page);
+  await page.addScriptTag({ path: require.resolve("axe-core/axe.min.js") });
+  async function checkContrast() {
+    const violations = await page.evaluate(async () => {
+      const axe = (window as any).axe as typeof import("axe-core");
+      const result = await axe.run(document, {
+        runOnly: { type: "tag", values: ["wcag2a", "wcag2aa", "wcag21aa"] },
+      });
+      return result.violations.map((v) => ({
+        id: v.id,
+        nodes: v.nodes.map((n) => n.target),
+      }));
+    });
+    expect(violations).toEqual([]);
+  }
+  await page.getByRole("button", { name: "For agents", exact: false }).click();
+  await checkContrast();
+  await page.keyboard.press("Escape");
+  await discover(page);
+  await checkContrast();
+  await page
+    .getByRole("button", { name: "See my places", exact: true })
+    .click();
+  await checkContrast();
 });

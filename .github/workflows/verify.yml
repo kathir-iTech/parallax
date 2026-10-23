@@ -7,7 +7,7 @@ jobs:
     # Standard Linux runners in this public source repository; no paid runner or secret.
     if: github.event.repository.private == false
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    timeout-minutes: 20
     steps:
       - uses: actions/checkout@v7.0.1
         with:
@@ -20,5 +20,5 @@ jobs:
       - run: npm test
       - run: npm run evaluate
       - run: npm run build
-      - run: npx --no-install playwright install --with-deps chromium
+      - run: npx --no-install playwright install --with-deps --only-shell chromium
       - run: npm run test:browser
