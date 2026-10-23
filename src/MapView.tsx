@@ -1,184 +1,293 @@
 import { useEffect, useRef, useState } from "react";
 import type { Map as MapType, Marker as MarkerType } from "maplibre-gl";
-import { LocateFixed, Minus, Plus, MapPin } from "lucide-react";
+import { LocateFixed, Minus, Plus, MapPin, RotateCcw } from "lucide-react";
 import type { Evidence, Decision } from "../core/types.ts";
 import "maplibre-gl/dist/maplibre-gl.css";
 import workerUrl from "maplibre-gl/dist/maplibre-gl-worker.mjs?worker&url";
 
 type Props = {
-  evidence: Evidence | null;
-  decision: Decision | null;
+  evidence: Evidence;
+  decision: Decision;
   selected: string | null;
   onSelect: (id: string) => void;
   view: "city" | "taste";
+  active: boolean;
 };
+type Camera = { center: [number, number]; zoom: number };
+const reducedMotion = () =>
+  window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
 export function MapView({
   evidence,
   decision,
   selected,
   onSelect,
   view,
+  active,
 }: Props) {
-  const container = useRef<HTMLDivElement>(null),
-    map = useRef<MapType | null>(null),
-    markers = useRef<MarkerType[]>([]);
-  const [ready, setReady] = useState(false),
-    [failed, setFailed] = useState(false);
+  const container = useRef<HTMLDivElement>(null);
+  const map = useRef<MapType | null>(null);
+  const library = useRef<typeof import("maplibre-gl") | null>(null);
+  const markers = useRef(new globalThis.Map<string, MarkerType>());
   const callback = useRef(onSelect);
+  const evidenceRef = useRef(evidence);
+  const camera = useRef<Camera | null>(null);
+  const fittedEvidence = useRef<string | null>(null);
+  const [ready, setReady] = useState(false),
+    [failed, setFailed] = useState(false),
+    [attempt, setAttempt] = useState(0);
   callback.current = onSelect;
+  evidenceRef.current = evidence;
+
   useEffect(() => {
+    // The connections view does not keep an active geographic renderer behind it.
+    if (view !== "city" || !active) return;
     let disposed = false;
+    let observer: ResizeObserver | undefined;
+    let frame = 0;
+    let ownedMap: MapType | undefined;
+    let removeContextListeners: (() => void) | undefined;
+    setReady(false);
+    setFailed(false);
     void import("maplibre-gl")
       .then((lib) => {
         if (disposed || !container.current) return;
         try {
+          library.current = lib;
           lib.setWorkerUrl(workerUrl);
           const m = new lib.Map({
             container: container.current,
             style: "https://tiles.openfreemap.org/styles/positron",
-            center: [-73.975, 40.756],
-            zoom: 11.3,
+            center: camera.current?.center ?? [-73.975, 40.756],
+            zoom: camera.current?.zoom ?? 11.3,
             attributionControl: { compact: true },
-            pitch: 0,
             maxPitch: 0,
+            pixelRatio: Math.min(window.devicePixelRatio || 1, 2),
+            fadeDuration: reducedMotion() ? 0 : 180,
           });
+          ownedMap = m;
           map.current = m;
-          m.on("load", () => {
-            if (disposed) return;
-            for (const layer of m.getStyle().layers ?? []) {
-              if (
-                layer.type === "fill" &&
-                /water/.test(layer.id) &&
-                !/waterway/.test(layer.id)
-              )
-                m.setPaintProperty(layer.id, "fill-color", "#bfd1cc");
-              if (layer.type === "background")
-                m.setPaintProperty(layer.id, "background-color", "#e9e7df");
+          const reportCamera = () => {
+            const center = m.getCenter();
+            camera.current = {
+              center: [center.lng, center.lat],
+              zoom: m.getZoom(),
+            };
+            if (container.current) {
+              container.current.dataset.mapCenter = `${center.lng},${center.lat}`;
+              container.current.dataset.mapZoom = String(m.getZoom());
             }
-            setFailed(false);
-            setReady(true);
+          };
+          m.on("moveend", reportCamera);
+          m.on("load", () => {
+            if (!disposed) {
+              setFailed(false);
+              setReady(true);
+              reportCamera();
+            }
           });
           m.on("error", () => {
             if (!disposed && !m.isStyleLoaded()) setFailed(true);
           });
-          const resize = new ResizeObserver(() => m.resize());
-          resize.observe(container.current);
-          m.once("remove", () => resize.disconnect());
+          const lost = () => {
+            if (!disposed) setFailed(true);
+          };
+          const recovered = () => {
+            if (!disposed) {
+              setFailed(false);
+              m.triggerRepaint();
+            }
+          };
+          m.getCanvas().addEventListener("webglcontextlost", lost);
+          m.getCanvas().addEventListener("webglcontextrestored", recovered);
+          removeContextListeners = () => {
+            m.getCanvas().removeEventListener("webglcontextlost", lost);
+            m.getCanvas().removeEventListener(
+              "webglcontextrestored",
+              recovered,
+            );
+          };
+          let width = container.current.clientWidth,
+            height = container.current.clientHeight;
+          observer = new ResizeObserver((entries) => {
+            const rect = entries[0]?.contentRect;
+            if (
+              !rect ||
+              !rect.width ||
+              !rect.height ||
+              (rect.width === width && rect.height === height)
+            )
+              return;
+            width = rect.width;
+            height = rect.height;
+            cancelAnimationFrame(frame);
+            frame = requestAnimationFrame(() => {
+              if (!disposed) m.resize();
+            });
+          });
+          observer.observe(container.current);
         } catch {
-          setFailed(true);
+          if (!disposed) setFailed(true);
         }
       })
-      .catch(() => setFailed(true));
+      .catch(() => {
+        if (!disposed) setFailed(true);
+      });
     return () => {
       disposed = true;
-      map.current?.remove();
-      map.current = null;
+      cancelAnimationFrame(frame);
+      observer?.disconnect();
+      removeContextListeners?.();
+      markers.current.forEach((marker) => marker.remove());
+      markers.current.clear();
+      ownedMap?.stop();
+      ownedMap?.remove();
+      if (map.current === ownedMap) map.current = null;
     };
-  }, []);
+  }, [view, attempt, active]);
+
   useEffect(() => {
-    const m = map.current;
-    if (!m || !ready) return;
-    let cancelled = false;
-    markers.current.forEach((x) => x.remove());
-    markers.current = [];
-    void import("maplibre-gl").then((lib) => {
-      if (cancelled || !evidence) return;
-      for (const place of evidence.places) {
-        const rank =
-          decision?.ranking.findIndex((x) => x.id === place.id) ?? -1;
-        const vetoed = decision?.vetoes.includes(place.id);
-        if (vetoed) continue;
+    const m = map.current,
+      lib = library.current;
+    if (view !== "city" || !active || !m || !lib || !ready) return;
+    const retained = new Set<string>();
+    const ranks = new globalThis.Map(decision.ranking.map((r, i) => [r.id, i]));
+    for (const place of evidence.places) {
+      if (decision.vetoes.includes(place.id)) continue;
+      retained.add(place.id);
+      let marker = markers.current.get(place.id);
+      if (!marker) {
         const el = document.createElement("button");
         el.type = "button";
-        el.className = `place-marker ${rank >= 0 && rank < 3 ? "top" : ""} ${selected === place.id ? "selected" : ""}`;
-        el.textContent = rank >= 0 && rank < 3 ? String(rank + 1) : "·";
-        el.setAttribute(
-          "aria-label",
-          `${place.name}${rank >= 0 ? `, rank ${rank + 1}` : ""}`,
-        );
+        el.dataset.placeId = place.id;
         el.addEventListener("click", () => callback.current(place.id));
-        const marker = new lib.Marker({ element: el, anchor: "bottom" })
+        marker = new lib.Marker({ element: el, anchor: "bottom" })
           .setLngLat([place.lon, place.lat])
           .addTo(m);
-        markers.current.push(marker);
+        markers.current.set(place.id, marker);
       }
-    });
-    return () => {
-      cancelled = true;
-      markers.current.forEach((x) => x.remove());
-    };
-  }, [evidence, decision, selected, ready]);
+      const rank = ranks.get(place.id) ?? -1,
+        el = marker.getElement();
+      el.className = `place-marker ${rank >= 0 && rank < 3 ? "top" : ""} ${selected === place.id ? "selected" : ""}`;
+      el.textContent = rank >= 0 ? String(rank + 1) : "·";
+      el.setAttribute(
+        "aria-label",
+        `${place.name}${rank >= 0 ? `, rank ${rank + 1}` : ""}`,
+      );
+      el.setAttribute("aria-pressed", String(selected === place.id));
+    }
+    for (const [id, marker] of markers.current)
+      if (!retained.has(id)) {
+        marker.remove();
+        markers.current.delete(id);
+      }
+    // No effect cleanup here: selection and rank changes preserve marker identities.
+  }, [evidence, decision, selected, ready, view, active]);
+
   useEffect(() => {
     const m = map.current;
-    if (!m || !ready || !evidence?.places.length) return;
-    const xs = evidence.places.map((p) => p.lon),
-      ys = evidence.places.map((p) => p.lat);
+    if (
+      view !== "city" ||
+      !active ||
+      !m ||
+      !ready ||
+      fittedEvidence.current === evidence.id
+    )
+      return;
+    const places = evidenceRef.current.places;
+    if (!places.length) return;
+    m.stop();
     m.fitBounds(
       [
-        [Math.min(...xs), Math.min(...ys)],
-        [Math.max(...xs), Math.max(...ys)],
+        [
+          Math.min(...places.map((p) => p.lon)),
+          Math.min(...places.map((p) => p.lat)),
+        ],
+        [
+          Math.max(...places.map((p) => p.lon)),
+          Math.max(...places.map((p) => p.lat)),
+        ],
       ],
-      {
-        padding: { top: 150, bottom: 120, left: 65, right: 65 },
-        maxZoom: 13,
-        duration: 1000,
-      },
+      { padding: 64, maxZoom: 13, duration: reducedMotion() ? 0 : 650 },
     );
-  }, [evidence?.id, ready]);
-  const focus = () => {
-    if (evidence?.places.length) {
-      const p =
-        evidence.places.find((p) => p.id === selected) ?? evidence.places[0];
-      map.current?.flyTo({ center: [p.lon, p.lat], zoom: 13, duration: 800 });
-    } else
-      map.current?.flyTo({
-        center: [-73.975, 40.756],
-        zoom: 11.3,
-        duration: 800,
+    fittedEvidence.current = evidence.id;
+  }, [evidence.id, ready, view, active]);
+
+  function focus() {
+    const p =
+      evidence.places.find((p) => p.id === selected) ?? evidence.places[0];
+    if (p && map.current) {
+      map.current.stop();
+      map.current.flyTo({
+        center: [p.lon, p.lat],
+        zoom: 13,
+        duration: reducedMotion() ? 0 : 650,
       });
-  };
+    }
+  }
   return (
     <div className={`map-stage ${view === "taste" ? "taste-active" : ""}`}>
-      <div
-        className="real-map"
-        ref={container}
-        role="region"
-        aria-label="Interactive map of New York place candidates"
-      />
-      <div className="map-grain" />
-      {(!ready || failed) && (
-        <div className="map-status">
-          {failed
-            ? "The map could not load. Every place remains available in the list."
-            : "Opening New York…"}
-        </div>
-      )}
-      {!evidence && (
-        <div className="map-intro" aria-hidden="true">
-          <div className="map-ring ring-one" />
-          <div className="map-ring ring-two" />
-          <span className="map-cross cross-one">+</span>
-          <span className="map-cross cross-two">+</span>
-          <div className="city-label">
-            <span>40.7128° N · 74.0060° W</span>
-            <strong>New York</strong>
-            <em>A city. A thousand ways in.</em>
+      {view === "city" ? (
+        <>
+          <div
+            className="real-map"
+            ref={container}
+            role="region"
+            aria-label="Interactive map of New York place candidates"
+            data-map-state={failed ? "failed" : ready ? "ready" : "loading"}
+          />
+          {(!ready || failed) && (
+            <div className="map-status" role="status">
+              <MapPin size={24} />
+              <strong>
+                {failed ? "The map is unavailable." : "Opening your city…"}
+              </strong>
+              <p>
+                {failed
+                  ? "Your places and directions are still available in the list."
+                  : "Loading geographic context for your places."}
+              </p>
+              {failed && (
+                <button
+                  className="secondary-button"
+                  onClick={() => setAttempt((n) => n + 1)}
+                >
+                  <RotateCcw size={16} /> Retry map
+                </button>
+              )}
+            </div>
+          )}
+          <div className="map-controls">
+            <button
+              aria-label="Zoom in"
+              onClick={() => {
+                map.current?.stop();
+                map.current?.zoomIn({ duration: reducedMotion() ? 0 : 250 });
+              }}
+            >
+              <Plus size={19} />
+            </button>
+            <button
+              aria-label="Zoom out"
+              onClick={() => {
+                map.current?.stop();
+                map.current?.zoomOut({ duration: reducedMotion() ? 0 : 250 });
+              }}
+            >
+              <Minus size={19} />
+            </button>
+            <button aria-label="Center map" onClick={focus}>
+              <LocateFixed size={19} />
+            </button>
           </div>
-          <span className="map-annotation">
-            Start with your culture.
-            <br />
-            See where it takes you.
-          </span>
-        </div>
-      )}
-      {view === "taste" && evidence && decision && (
+        </>
+      ) : (
         <div className="taste-chart">
           <div className="chart-heading">
-            <span className="eyebrow">A different kind of map</span>
             <h2>Where your worlds meet.</h2>
             <p>
-              Positions come from Qloo’s order within this shortlist. They show
-              cultural association, not geographic distance.
+              Places nearer an axis end ranked higher through that reference.
+              These are cultural connections, not distances.
             </p>
           </div>
           <div className="chart-plane">
@@ -190,53 +299,29 @@ export function MapView({
                   key={r.id}
                   className={`chart-dot ${i < 3 ? "top" : ""} ${selected === r.id ? "selected" : ""}`}
                   style={{
-                    left: `${8 + r.features[0] * 84}%`,
-                    bottom: `${8 + r.features[1] * 84}%`,
+                    left: `${10 + r.features[0] * 78}%`,
+                    bottom: `${10 + r.features[1] * 78}%`,
                   }}
                   onClick={() => onSelect(r.id)}
-                  aria-label={`${p.name}, ${Math.round(r.features[0] * 100)} and ${Math.round(r.features[1] * 100)} ordinal feature values`}
+                  aria-label={`${p.name}, rank ${i + 1}`}
+                  aria-pressed={selected === r.id}
                   title={p.name}
                 >
-                  {i < 3 ? i + 1 : "·"}
+                  {i + 1}
                 </button>
               );
             })}
             <span className="axis-x">{evidence.references[0].name} →</span>
             <span className="axis-y">{evidence.references[1].name} →</span>
           </div>
-          <div className="chart-note">
-            {evidence.references.length === 3
-              ? "This view projects the first two references. All three contribute to the decision."
-              : "Top picks are numbered. Select a point to inspect its evidence."}
-          </div>
+          {evidence.references.length === 3 && (
+            <p className="chart-note">
+              This view shows the first two references. All three contribute to
+              your decision.
+            </p>
+          )}
         </div>
       )}
-      <div className="map-corner">
-        <span className="tiny-compass">
-          N<span>↑</span>
-        </span>
-        <div className="map-controls">
-          <button aria-label="Zoom in" onClick={() => map.current?.zoomIn()}>
-            <Plus size={17} />
-          </button>
-          <button aria-label="Zoom out" onClick={() => map.current?.zoomOut()}>
-            <Minus size={17} />
-          </button>
-          <button aria-label="Center map" onClick={focus}>
-            <LocateFixed size={17} />
-          </button>
-        </div>
-      </div>
-      <div className="map-footnote">
-        <MapPin size={13} />
-        <span>NEW YORK CITY</span>
-        <span className="map-footnote-line" />
-        <span>
-          {evidence
-            ? `${decision?.ranking.length ?? 0} places in view`
-            : "An exploration through culture"}
-        </span>
-      </div>
     </div>
   );
 }

@@ -2,6 +2,18 @@
 
 Checked 23 October 2026. Each evidence class below is kept separate.
 
+## Experience rebuild — v1.1.0
+
+- TypeScript and the production build passed. The map library and worker are deferred until the explorer is opened; the large MapLibre chunk remains an explicit tradeoff.
+- Sixteen unit/HTTP tests passed, including backward-compatible preference imports and validation of explicit balance.
+- Six browser regression cases passed against the real React UI and MapLibre renderer with synthetic backend fixtures and a deterministic tile-free style. These use no provider secrets or Qloo requests.
+- Browser cases cover comparison/undo, explicit-balance persistence after reload, export/restore, thirty selections with marker identity preserved, repeated dragging, zoom, resize, view switching, map release/reopen, reversible vetoes, map failure/retry, WebGL context loss/restoration, reduced motion, and recovery from failed discovery.
+- The actual Qloo credential and signing secret were absent from the scanned product source and built assets.
+
+The fixture browser suite verifies interaction contracts; it does not establish live provider or tile-network availability, human preference quality, or performance on the owner's GPU. Live deployed observations are recorded separately in the release packet. See [experience and interaction details](EXPERIENCE.md).
+
+## Initial v1.0.0 release — historical verification
+
 | Check                                     | Observed result                                                                            | Scope                                                                                                                                                                                                                                                   |
 | ----------------------------------------- | ------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | TypeScript and production build           | Passed                                                                                     | React/Vite client and Node API source; actual Vercel packaging also succeeded                                                                                                                                                                           |

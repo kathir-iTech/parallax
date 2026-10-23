@@ -14,12 +14,12 @@ A transaction-level advisory lock makes multi-dimension reservations all-or-noth
 
 ## Data
 
-- Studio references and answers: IndexedDB on the user's device. No tracking analytics or account login.
-- Server: signed anonymous session IDs, bounded counters, pseudonymous network identifiers, thirty-minute normalized provider evidence, and ninety-second preparation leases. No personal answer database.
+- Studio references, answers, and explicit balance when set: IndexedDB on the user's device. No tracking analytics or account login.
+- Server: signed anonymous session IDs, bounded counters, pseudonymous network identifiers, thirty-minute normalized provider evidence, and 150-second preparation leases. No personal answer database.
 - IP pseudonyms: HMAC under a private server secret, used only for admission limits; raw request bodies and credentials are not logged by application code. Hosting/provider infrastructure has its own logs and terms.
 - Qloo: selected cultural identities and bounded query parameters. No names/emails, imported URLs, or personal browsing history are required.
 - Agent tool: supplied answers are transmitted for transient computation, as disclosed in the tool description.
-- Export: preference identities and explicit answers; optional readable field notes containing selected venue identities and links. No raw bulk responses, provider images, API keys, or identity proofs are embedded.
+- Export: preference identities, explicit answers, and optional explicit balance; optional readable field notes containing selected venue identities and links. No raw bulk responses, provider images, API keys, or identity proofs are embedded.
 
 Managed local removal compacts state and removes derived decisions. It also attempts deletion of the reachable session-scoped temporary evidence handle; if unreachable, the UI states the expiry boundary. Earlier exports, screenshots, external-agent memories, provider logs, and backups are outside that action. Opportunistic database cleanup removes expired rows; expiry prevents access even before physical cleanup.
 

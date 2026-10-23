@@ -74,4 +74,5 @@ export type Profile = {
   evidence: Evidence | null;
   savedAt: string;
   mode: "live" | "restored";
+  manualWeights?: number[];
 };

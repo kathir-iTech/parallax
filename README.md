@@ -6,7 +6,9 @@
 
 PARALLAX is a Qloo-powered place-choice studio and agentic tool. Start with two or three familiar artists or films. Qloo discovers New York places and ranks one shared shortlist through each cultural reference. When those perspectives disagree, a small exact decision model chooses a comparison that could change the recommendation.
 
-The person answers what they would rather try. Up to three relative choices refine the shortlist. They can also skip, accept both, veto neither-for-this-outing options, change an answer, remove it, and rebuild the decision. An interactive city map and an ordinal cultural-association plot expose two useful views of the same evidence.
+The person answers what they would rather try. Up to three relative choices refine the shortlist. They can also skip, accept both, veto neither-for-this-outing options, change an answer, remove it, and rebuild the decision. The experience puts large comparison cards and a visibly changing shortlist first. Open the city map or cultural-connections plot when geographic context or ranking evidence helps.
+
+The experience rebuild adds original animated vector artwork, readable typography, explicit discovery/comparison/result stages, before-and-after ranking, reduced motion, and an on-demand map. Unchanged places retain their marker objects during selection; camera position survives view switches. See [experience and browser verification](docs/EXPERIENCE.md).
 
 ## Run
 
@@ -28,6 +30,15 @@ npm run evaluate
 npm run build
 npm run mcp
 ```
+
+For browser regression tests, install Playwright's Chromium once, then run:
+
+```sh
+npx playwright install chromium
+npm run test:browser
+```
+
+These browser tests intercept every API request with explicitly synthetic fixtures, and use a deterministic map style with the real MapLibre renderer. They require no Qloo key, database, provider credits, or paid service. Windows can use an existing standard Chrome installation; `PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH` can override the executable. For diagnostic traces, run `npm run test:browser -- --trace on`.
 
 ## Architecture
 
@@ -59,6 +70,6 @@ Synthetic stress experiments and a real provider integration check are different
 
 ## Privacy, cost and licensing
 
-Answers stay in browser-managed local storage for the studio. The agent tool explicitly sends supplied answers for transient backend computation; it does not create a remote personal profile. Thirty-minute provider-evidence handles are session scoped. Preference exports contain references and answers, not API keys, provider images, descriptions, or a claim of fresh evidence. See [privacy and operation](docs/OPERATIONS.md).
+Answers and an explicit balance when set stay in browser-managed local storage for the studio. The agent tool explicitly sends supplied answers for transient backend computation; it does not create a remote personal profile. Thirty-minute provider-evidence handles are session scoped. Preference exports contain references, answers, and optional explicit balance, not API keys, provider images, descriptions, or a claim of fresh evidence. See [privacy and operation](docs/OPERATIONS.md).
 
 The source is MIT licensed. Third-party fonts, map software, map data and Qloo content retain their own licenses and terms; the MIT license does not relicense provider data. See [attribution](docs/ATTRIBUTION.md).

@@ -73,7 +73,11 @@ export function ReferenceInput({
       <div className="reference-label">
         <span>
           <i />
-          {String(index + 1).padStart(2, "0")} / CULTURAL REFERENCE
+          {index === 2
+            ? "Another side of you"
+            : kind === "artist"
+              ? "An artist on repeat"
+              : "A film that stays with you"}
         </span>
         {onRemove && (
           <button
@@ -88,7 +92,7 @@ export function ReferenceInput({
       </div>
       {value ? (
         <div className="confirmed-reference">
-          <div className="reference-type-icon">
+          <div className="reference-type-icon" aria-hidden="true">
             {value.kind === "artist" ? <Disc3 size={24} /> : <Film size={24} />}
           </div>
           <div>

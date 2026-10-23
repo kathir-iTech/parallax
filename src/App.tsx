@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import { lazy, Suspense, useEffect, useMemo, useRef, useState } from "react";
 import {
   ArrowDown,
   ArrowLeft,
@@ -6,7 +6,6 @@ import {
   ArrowUpRight,
   Bookmark,
   Check,
-  ChevronDown,
   Code2,
   Download,
   ExternalLink,
@@ -33,7 +32,10 @@ import type {
 } from "../core/types.ts";
 import { advise, MODEL, NOISE, QUESTION_COST } from "../core/engine.ts";
 import { ReferenceInput } from "./ReferenceInput.tsx";
-import { MapView } from "./MapView.tsx";
+import { AnimatedShortlist, CityArtwork, PlaceImage } from "./Experience.tsx";
+const MapView = lazy(() =>
+  import("./MapView.tsx").then((module) => ({ default: module.MapView })),
+);
 import { forgetEvidence, prepare, resolveReferences } from "./api.ts";
 import { download, importSchema, loadProfile, saveProfile } from "./storage.ts";
 
@@ -47,42 +49,6 @@ const labels: Record<Choice, string> = {
 const noRefs: [null, null] = [null, null];
 const prettyTime = (d: string) =>
   new Date(d).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
-function PlaceImage({
-  place,
-  className = "",
-}: {
-  place: Place;
-  className?: string;
-}) {
-  const [broken, setBroken] = useState(false);
-  const [loaded, setLoaded] = useState(false);
-  return (
-    <div className={`place-image ${className}`}>
-      {!loaded && (
-        <div className="photo-fallback" title="Venue photograph has not loaded">
-          <MapPin size={24} />
-          <span>{place.category ?? "New York place"}</span>
-        </div>
-      )}
-      {place.image && !broken && (
-        <img
-          src={place.image}
-          alt={place.name}
-          loading="eager"
-          decoding="async"
-          style={{ opacity: loaded ? 1 : 0 }}
-          onLoad={(event) => {
-            if (event.currentTarget.naturalWidth >= 16) setLoaded(true);
-            else setBroken(true);
-          }}
-          onError={() => setBroken(true)}
-          referrerPolicy="no-referrer"
-        />
-      )}
-    </div>
-  );
-}
-
 export default function App() {
   const [references, setReferences] = useState<(Reference | null)[]>(noRefs),
     [kinds, setKinds] = useState<Reference["kind"][]>(["artist", "movie"]);
@@ -93,7 +59,7 @@ export default function App() {
     [exampleBusy, setExampleBusy] = useState(false),
     [error, setError] = useState(""),
     [notice, setNotice] = useState("");
-  const [modal, setModal] = useState<
+  const [modal, setModalState] = useState<
       "about" | "history" | "evidence" | "agent" | "balance" | null
     >(null),
     [view, setView] = useState<"city" | "taste">("city");
@@ -105,11 +71,26 @@ export default function App() {
   const [showCompare, setShowCompare] = useState(true),
     [saved, setSaved] = useState(false);
   const [inputEpoch, setInputEpoch] = useState(0);
+  const [mapOpen, setMapOpen] = useState(false),
+    [mapVisited, setMapVisited] = useState(false);
+  const scrollTo = (id: string) =>
+    requestAnimationFrame(() =>
+      document.getElementById(id)?.scrollIntoView({
+        behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches
+          ? "instant"
+          : "smooth",
+        block: "start",
+      }),
+    );
   const pending = useRef<AbortController | null>(null),
     generation = useRef(0),
     importInput = useRef<HTMLInputElement>(null),
     modalRef = useRef<HTMLDivElement>(null),
     modalPrevious = useRef<HTMLElement | null>(null);
+  function setModal(next: typeof modal) {
+    if (next) modalPrevious.current = document.activeElement as HTMLElement;
+    setModalState(next);
+  }
   const refs = references.filter((r): r is Reference => r !== null);
   const decision = useMemo(
     () =>
@@ -117,6 +98,10 @@ export default function App() {
         ? advise(evidence, answers, manual ? { manualWeights: manual } : {})
         : null,
     [evidence, answers, manual],
+  );
+  const initialDecision = useMemo(
+    () => (evidence ? advise(evidence, []) : null),
+    [evidence],
   );
   const top = decision?.ranking[0],
     selectedPlace = evidence?.places.find(
@@ -145,8 +130,13 @@ export default function App() {
             new Date(p.evidence.expiresAt).getTime() > Date.now()
           ) {
             try {
-              advise(p.evidence, p.answers ?? []);
+              advise(
+                p.evidence,
+                p.answers ?? [],
+                p.manualWeights ? { manualWeights: p.manualWeights } : {},
+              );
               setEvidence(p.evidence);
+              setManual(p.manualWeights ?? null);
               setRestored(true);
               setNotice(
                 "Restored from this device. These are previously retrieved observations, not a new Qloo request.",
@@ -184,13 +174,13 @@ export default function App() {
           evidence,
           savedAt: new Date().toISOString(),
           mode: restored ? "restored" : "live",
+          ...(manual ? { manualWeights: manual } : {}),
         }
       : null;
     void saveProfile(profile).catch(() => setStorageOk(false));
-  }, [references, answers, evidence, revision, hydrated, restored]);
+  }, [references, answers, evidence, revision, hydrated, restored, manual]);
   useEffect(() => {
     if (!modal) return;
-    modalPrevious.current = document.activeElement as HTMLElement;
     const timer = setTimeout(
       () =>
         modalRef.current
@@ -222,7 +212,8 @@ export default function App() {
     return () => {
       clearTimeout(timer);
       document.removeEventListener("keydown", keys);
-      modalPrevious.current?.focus();
+      if (modalPrevious.current?.isConnected)
+        modalPrevious.current.focus({ preventScroll: true });
     };
   }, [modal]);
   function invalidate() {
@@ -237,6 +228,8 @@ export default function App() {
     setSelected(null);
     setRestored(false);
     setSaved(false);
+    setMapOpen(false);
+    setMapVisited(false);
   }
   function changeReference(index: number, value: Reference | null) {
     invalidate();
@@ -295,7 +288,6 @@ export default function App() {
     setBusy(true);
     setError("");
     setNotice("");
-    setManual(null);
     try {
       const verified: Reference[] = [];
       for (const ref of refs) {
@@ -325,6 +317,9 @@ export default function App() {
       setSelected(null);
       setShowCompare(true);
       setSaved(false);
+      setMapOpen(false);
+      setMapVisited(false);
+      scrollTo("workspace");
       if (kept.length !== answers.length)
         setNotice(
           `${answers.length - kept.length} previous comparisons did not belong to the new candidate set and were removed.`,
@@ -347,6 +342,12 @@ export default function App() {
     if (!decision?.question) return;
     const { a, b } = decision.question;
     setAnswers((old) => [...old, { id: crypto.randomUUID(), a, b, choice }]);
+    requestAnimationFrame(() => {
+      const heading = document.querySelector<HTMLElement>(
+        ".question-title, #decision-title",
+      );
+      heading?.focus({ preventScroll: true });
+    });
     setRevision((r) => r + 1);
     setSelected(null);
     setSaved(false);
@@ -409,6 +410,7 @@ export default function App() {
           area: "nyc",
           references,
           answers,
+          ...(manual ? { manualWeights: manual } : {}),
           exportedAt: new Date().toISOString(),
         },
         null,
@@ -462,6 +464,7 @@ export default function App() {
       setReferences(data.references);
       setKinds(data.references.map((r) => r.kind));
       setAnswers(data.answers);
+      setManual(data.manualWeights ?? null);
       setNotice(
         "Preferences imported. Find places to retrieve fresh evidence; imported data is not a live Qloo result.",
       );
@@ -478,8 +481,31 @@ export default function App() {
   const selectedFeature = decision?.ranking.find(
     (r) => r.id === selectedPlace?.id,
   );
+  function openMap() {
+    setMapVisited(true);
+    setMapOpen(true);
+    scrollTo("place-explorer");
+  }
+  function pickPlace(id: string) {
+    setSelected(id);
+    if (!mapOpen) {
+      setShowCompare(false);
+      scrollTo("decision-content");
+    }
+  }
+  const comparing = Boolean(decision?.question && currentPair && showCompare);
+  const baselineRank = selectedPlace
+    ? (initialDecision?.ranking.findIndex((r) => r.id === selectedPlace.id) ??
+        -1) + 1
+    : 0;
+  const leadingChanged = initialDecision?.ranking[0]?.id !== top?.id;
+  const selectedLens =
+    selectedFeature?.features.reduce(
+      (best, value, i, all) => (value > all[best] ? i : best),
+      0,
+    ) ?? 0;
   return (
-    <div className="app-shell">
+    <div className={`app-shell ${evidence ? "result-shell" : "entry-shell"}`}>
       <a className="skip-link" href="#workspace">
         Skip to the experience
       </a>
@@ -489,34 +515,18 @@ export default function App() {
             <path d="M4 31V5h15a9 9 0 0 1 0 18H4m12 8V5h12a9 9 0 0 1 0 18H16" />
           </svg>
           <span>
-            PARALLAX<span className="brand-dot">®</span>
+            parallax<span className="brand-dot">↗</span>
           </span>
         </a>
         <nav aria-label="Main navigation">
-          <button
-            className="nav-active"
-            onClick={() => {
-              setModal(null);
-              document
-                .getElementById("workspace")
-                ?.scrollIntoView({ behavior: "smooth" });
-            }}
-          >
-            Explore<span>01</span>
-          </button>
-          <button onClick={() => setModal("about")}>
-            The idea
-            <ArrowUpRight size={12} />
-          </button>
+          <button onClick={() => setModal("about")}>The idea</button>
           <button onClick={() => setModal("agent")}>
-            For agents
-            <Code2 size={14} />
+            <Code2 size={17} /> For agents
           </button>
         </nav>
-        <button className="header-note" onClick={() => setModal("about")}>
-          <span className="live-dot" />
-          CULTURE, WITH A SENSE OF PLACE
-        </button>
+        <span className="header-location">
+          <MapPin size={17} /> New York City
+        </span>
       </header>
       <main
         id="workspace"
@@ -524,71 +534,143 @@ export default function App() {
         inert={Boolean(modal)}
         className={`workspace ${evidence ? "has-results" : ""}`}
       >
-        <section className="editor-panel" aria-label="Cultural place discovery">
-          <div className="editor-scroll">
-            {!evidence ? (
-              <>
-                <div className="intro-eyebrow">
-                  <span className="edition-mark">P / 001</span>
-                  <span>THE NEW YORK EDITION</span>
-                  <span className="small-star">✳</span>
-                </div>
-                <h1>
-                  Your taste.
-                  <br />A different
+        {busy ? (
+          <section
+            className="discovery-stage"
+            aria-labelledby="discovery-title"
+          >
+            <div className="discovery-art" aria-hidden="true">
+              <span className="discovery-disc">
+                <span />
+              </span>
+              <span className="discovery-cross">×</span>
+              <span className="discovery-frame">
+                <span />
+                <span />
+                <span />
+              </span>
+            </div>
+            <p className="section-label">
+              Your references. A whole new connection.
+            </p>
+            <h1 id="discovery-title">
+              Finding your
+              <br />
+              <em>kind of place.</em>
+            </h1>
+            <div className="reference-chips">
+              {refs.map((r, i) => (
+                <span className={`lens-${i}`} key={r.id}>
+                  {r.name}
+                </span>
+              ))}
+            </div>
+            <div className="loading-note" role="status">
+              <span className="loading-track" />
+              <p>
+                Qloo is discovering New York places and comparing them through
+                your references. Your shortlist appears when the evidence is
+                ready.
+              </p>
+            </div>
+            <button
+              className="text-link"
+              onClick={() => {
+                generation.current++;
+                pending.current?.abort();
+                setBusy(false);
+                setNotice(
+                  "Search cancelled. A provider request already in progress may still count toward the allowance.",
+                );
+              }}
+            >
+              Cancel search <X size={17} />
+            </button>
+          </section>
+        ) : !evidence ? (
+          <>
+            <section className="entry-hero" aria-labelledby="entry-title">
+              <div className="hero-copy">
+                <p className="section-label">
+                  <span className="live-dot" /> Culture takes you places.
+                </p>
+                <h1 id="entry-title">
+                  Go somewhere
                   <br />
-                  <em>New York.</em>
-                  <span className="headline-orbit" aria-hidden="true">
+                  that feels
+                  <br />
+                  <em>like you.</em>
+                  <span className="hero-arrow" aria-hidden="true">
                     ↗
                   </span>
                 </h1>
-                <p className="intro-copy">
-                  The music you love. The films that stay with you.
-                  <br />A new way to find your place in the city.
+                <p className="hero-description">
+                  Find a New York place through the music and films you love. A
+                  few choices make it yours.
                 </p>
-                <div className="section-rule">
-                  <span>START WITH TWO THINGS YOU LOVE</span>
-                  <ArrowDown size={14} />
+                <a className="hero-start" href="#your-references">
+                  Find your connection <ArrowDown size={20} />
+                </a>
+              </div>
+              <CityArtwork />
+            </section>
+            <section
+              className="reference-workspace"
+              id="your-references"
+              aria-labelledby="references-title"
+            >
+              <div className="section-heading">
+                <div>
+                  <p className="section-label">Start with your world</p>
+                  <h2 id="references-title">What stays with you?</h2>
                 </div>
-                <div className="reference-stack">
-                  {references.map((r, i) => (
-                    <ReferenceInput
-                      key={`${i}-${kinds[i]}-${inputEpoch}`}
-                      index={i}
-                      value={r}
-                      kind={kinds[i]}
-                      onChange={(r) => changeReference(i, r)}
-                      onKind={(k) => {
-                        invalidate();
-                        setKinds((old) => old.map((x, j) => (j === i ? k : x)));
-                      }}
-                      onRemove={
-                        i === 2
-                          ? () => {
-                              invalidate();
-                              setReferences((old) => old.slice(0, 2));
-                              setKinds((old) => old.slice(0, 2));
-                            }
-                          : undefined
-                      }
-                      disabled={busy || exampleBusy}
-                    />
-                  ))}
-                </div>
-                {references.length < 3 && (
-                  <button
-                    className="add-reference"
-                    disabled={busy || exampleBusy}
-                    onClick={() => {
+                <p>
+                  An artist on repeat. A film you think about.
+                  <br /> Bring two. We’ll find the connection.
+                </p>
+              </div>
+              <div className={`reference-stack count-${references.length}`}>
+                {references.map((r, i) => (
+                  <ReferenceInput
+                    key={`${i}-${kinds[i]}-${inputEpoch}`}
+                    index={i}
+                    value={r}
+                    kind={kinds[i]}
+                    onChange={(r) => changeReference(i, r)}
+                    onKind={(k) => {
                       invalidate();
-                      setReferences((old) => [...old, null]);
-                      setKinds((old) => [...old, "artist"]);
+                      setKinds((old) => old.map((x, j) => (j === i ? k : x)));
                     }}
-                  >
-                    <Plus size={14} />
-                    Add another perspective<span>optional</span>
-                  </button>
-                )}
+                    onRemove={
+                      i === 2
+                        ? () => {
+                            invalidate();
+                            setReferences((old) => old.slice(0, 2));
+                            setKinds((old) => old.slice(0, 2));
+                          }
+                        : undefined
+                    }
+                    disabled={busy || exampleBusy}
+                  />
+                ))}
+              </div>
+              <div className="reference-bottom">
+                <div>
+                  {references.length < 3 && (
+                    <button
+                      className="add-reference"
+                      disabled={busy || exampleBusy}
+                      onClick={() => {
+                        invalidate();
+                        setReferences((old) => [...old, null]);
+                        setKinds((old) => [...old, "artist"]);
+                      }}
+                    >
+                      <Plus size={18} /> Add a third reference
+                    </button>
+                  )}
+                  <p>Choose a search result to confirm each identity.</p>
+                </div>
                 <button
                   className="primary-button find-button"
                   onClick={() => void findPlaces()}
@@ -599,205 +681,259 @@ export default function App() {
                     exampleBusy
                   }
                 >
-                  {busy ? (
-                    <>
-                      <span className="spinner" />
-                      Discovering your connections…
-                    </>
+                  Find my places <ArrowUpRight size={23} />
+                </button>
+              </div>
+              <div className="example-block">
+                <span>Try a pairing</span>
+                <button
+                  disabled={busy || exampleBusy}
+                  onClick={() => void example(1)}
+                >
+                  {exampleBusy ? (
+                    <span className="spinner" />
                   ) : (
                     <>
-                      Find my places
-                      <ArrowUpRight size={20} />
+                      <span className="example-dot dot-purple" />
+                      Radiohead <em>×</em> Grand Budapest{" "}
+                      <ArrowUpRight size={17} />
                     </>
                   )}
                 </button>
-                {busy && (
-                  <div className="loading-note" role="status">
-                    <span className="loading-track" />
-                    <strong>Connecting your cultural worlds.</strong>
-                    <span>
-                      Qloo is finding local places and ranking one shared
-                      shortlist through each reference. This can take around
-                      half a minute.
-                    </span>
-                    <button
-                      onClick={() => {
-                        generation.current++;
-                        pending.current?.abort();
-                        setBusy(false);
-                        setNotice(
-                          "Search cancelled. A request already sent to Qloo may still count toward the allowance.",
-                        );
-                      }}
-                    >
-                      Cancel this search
-                    </button>
-                  </div>
-                )}
-                <div className="example-block">
-                  <span>NEED A STARTING POINT?</span>
-                  <button
-                    disabled={busy || exampleBusy}
-                    onClick={() => void example(1)}
-                  >
-                    {exampleBusy ? (
-                      <span className="spinner" />
-                    ) : (
-                      <>
-                        <span className="example-dot dot-coral" />
-                        <span>
-                          Radiohead <em>×</em> Grand Budapest
-                        </span>
-                        <ArrowUpRight size={14} />
-                      </>
-                    )}
-                  </button>
-                  <button
-                    disabled={busy || exampleBusy}
-                    onClick={() => void example(2)}
-                  >
-                    <span className="example-dot dot-green" />
-                    <span>
-                      Beyoncé <em>×</em> Spirited Away
-                    </span>
-                    <ArrowUpRight size={14} />
-                  </button>
-                </div>
-                <div className="intro-footer">
-                  <span className="mini-symbol">↔</span>
-                  <p>
-                    Culture finds a connection.
-                    <br />
-                    <strong>Your choices give it direction.</strong>
-                  </p>
-                </div>
-              </>
-            ) : (
-              <>
-                <div className="result-topline">
-                  <button
-                    onClick={() => {
-                      setEvidence(null);
-                      setSelected(null);
-                      setManual(null);
-                      setNotice(
-                        "Edit a reference or find places again. A new search retrieves fresh evidence.",
-                      );
-                    }}
-                  >
-                    <ArrowLeft size={14} />
-                    Your references
-                  </button>
-                  <button
-                    aria-label="Review answer history"
-                    onClick={() => setModal("history")}
-                  >
-                    <History size={16} />
-                    <span>{answers.length}</span>
-                  </button>
-                </div>
-                <div className="result-eyebrow">
-                  <span className="live-dot" />
-                  {restored
-                    ? "RESTORED OBSERVATIONS"
-                    : "LIVE QLOO OBSERVATIONS"}
-                  <span> / NYC</span>
-                </div>
-                <h1 className="result-title">
-                  A new point
-                  <br />
-                  of <em>view.</em>
-                  <span>↗</span>
-                </h1>
+                <button
+                  disabled={busy || exampleBusy}
+                  onClick={() => void example(2)}
+                >
+                  <span className="example-dot dot-coral" />
+                  Beyoncé <em>×</em> Spirited Away <ArrowUpRight size={17} />
+                </button>
+              </div>
+            </section>
+            <section className="how-strip" aria-label="How discovery works">
+              <div>
+                <span>1</span>
+                <p>
+                  <strong>Bring your culture.</strong>Choose music and films you
+                  love.
+                </p>
+              </div>
+              <ArrowRight size={23} />
+              <div>
+                <span>2</span>
+                <p>
+                  <strong>Follow your curiosity.</strong>Compare places when a
+                  choice helps.
+                </p>
+              </div>
+              <ArrowRight size={23} />
+              <div>
+                <span>3</span>
+                <p>
+                  <strong>Find your next place.</strong>See what changed and
+                  why.
+                </p>
+              </div>
+            </section>
+          </>
+        ) : (
+          decision && (
+            <>
+              <div className="journey-bar">
+                <button
+                  className="back-link"
+                  onClick={() => {
+                    setEvidence(null);
+                    setSelected(null);
+                    setManual(null);
+                    setMapOpen(false);
+                    setMapVisited(false);
+                    setNotice("");
+                    scrollTo("your-references");
+                  }}
+                >
+                  <ArrowLeft size={18} /> Your references
+                </button>
                 <div className="reference-chips">
                   {evidence.references.map((r, i) => (
                     <span className={`lens-${i}`} key={r.id}>
-                      <i />
                       {r.name}
                     </span>
                   ))}
                 </div>
-                <div className="result-summary">
-                  <span>{eligible.length} shared places</span>
-                  <span>·</span>
-                  <span>{decision?.answered ?? 0} / 3 choices</span>
-                  <button onClick={() => setModal("evidence")}>
-                    Why these?
-                    <Info size={13} />
-                  </button>
-                </div>
-                {decision?.status === "insufficient" ||
-                decision?.status === "exhausted" ? (
-                  <div className="empty-decision">
-                    <h2>
-                      {decision.status === "exhausted"
-                        ? "A fresh perspective?"
-                        : "We need a little more to go on."}
-                    </h2>
-                    <p>{decision.reason}</p>
-                    <button
-                      className="text-link"
-                      onClick={() => setModal("history")}
-                    >
-                      Review your choices
-                      <ArrowRight size={15} />
-                    </button>
-                  </div>
-                ) : (
-                  <>
-                    <div className="shortlist-heading">
-                      <span className="eyebrow">YOUR CONSIDERED SHORTLIST</span>
+                <button
+                  className="history-link"
+                  onClick={() => setModal("history")}
+                  aria-label="Review answer history"
+                >
+                  <History size={18} />
+                  <span>
+                    {answers.length
+                      ? `${answers.length} ${answers.length === 1 ? "choice" : "choices"}`
+                      : "Your choices"}
+                  </span>
+                </button>
+              </div>
+              <div className="result-eyebrow">
+                <span className="live-dot" />
+                {restored ? "Restored observations" : "Live Qloo observations"}
+                <span> · New York City</span>
+              </div>
+              <div
+                className="decision-grid"
+                id="decision-content"
+                hidden={mapOpen}
+              >
+                <section
+                  className="decision-main"
+                  aria-label={
+                    comparing
+                      ? "Refine your places"
+                      : "Your place recommendation"
+                  }
+                >
+                  {decision.status === "insufficient" ||
+                  decision.status === "exhausted" ? (
+                    <div className="empty-decision">
+                      <h1 id="decision-title" tabIndex={-1}>
+                        Let’s change
+                        <br />
+                        <em>the perspective.</em>
+                      </h1>
+                      <p>{decision.reason}</p>
                       <button
-                        onClick={() => setModal("balance")}
-                        aria-label="Adjust your cultural balance"
+                        className="primary-button"
+                        onClick={() => setModal("history")}
                       >
-                        <SlidersHorizontal size={15} />
+                        Review your choices <ArrowRight size={19} />
                       </button>
                     </div>
-                    <div className="shortlist">
-                      {eligible.slice(0, 3).map((r, i) => {
-                        const p = evidence.places.find((p) => p.id === r.id)!;
-                        return (
-                          <button
-                            key={r.id}
-                            className={`shortlist-card ${selectedPlace?.id === r.id ? "active" : ""}`}
-                            onClick={() => setSelected(r.id)}
+                  ) : comparing && currentPair ? (
+                    <section
+                      className="comparison"
+                      aria-labelledby="comparison-title"
+                    >
+                      <div className="comparison-heading">
+                        <div>
+                          <p className="section-label">
+                            Make it a little more you
+                          </p>
+                          <h1
+                            id="comparison-title"
+                            className="question-title"
+                            tabIndex={-1}
                           >
-                            <span className="rank-number">0{i + 1}</span>
-                            <PlaceImage place={p} />
-                            <span className="shortlist-card-text">
+                            Where <em>next?</em>
+                          </h1>
+                        </div>
+                        <span className="choice-count">
+                          {decision.answered} / 3 choices
+                        </span>
+                      </div>
+                      <p className="comparison-intro">
+                        Which would you rather try? Choose what draws you in.
+                      </p>
+                      <div
+                        className="comparison-pair"
+                        key={`${decision.question!.a}-${decision.question!.b}`}
+                      >
+                        {currentPair.map((p, i) => (
+                          <button
+                            key={p.id}
+                            onClick={() => answer(i === 0 ? "a" : "b")}
+                            className="comparison-option"
+                          >
+                            <div className="option-image">
+                              <PlaceImage key={p.id} place={p} />
+                              <span className="option-letter">
+                                {i === 0 ? "A" : "B"}
+                              </span>
+                              <span className="option-arrow">
+                                <ArrowUpRight size={25} />
+                              </span>
+                            </div>
+                            <div className="option-copy">
+                              <span className="place-category">
+                                {p.category ?? "New York place"}
+                              </span>
                               <strong>{p.name}</strong>
-                              <small>
-                                {p.category ?? "A place in New York"}
-                                <span>
-                                  {i === 0
-                                    ? "Your current first pick"
-                                    : `Another perspective`}
-                                </span>
-                              </small>
-                            </span>
-                            <ArrowUpRight size={17} />
+                              <p>
+                                {p.description.slice(0, 175)}
+                                {p.description.length > 175 ? "…" : ""}
+                              </p>
+                              <span className="option-choose">
+                                I’d try this <ArrowRight size={18} />
+                              </span>
+                            </div>
                           </button>
-                        );
-                      })}
-                    </div>
-                    {selectedPlace && (
-                      <div className="selected-details">
-                        <div className="detail-caption">
-                          <span className="eyebrow">
-                            {selectedRank < 3
-                              ? "A CLOSER LOOK"
-                              : "FROM THE SHARED CANDIDATE SET"}
-                          </span>
-                          <span>
-                            {selectedRank >= 0
-                              ? `${selectedRank + 1} / ${eligible.length}`
-                              : ""}
+                        ))}
+                      </div>
+                      <div className="comparison-alternatives">
+                        <button onClick={() => answer("both")}>
+                          Both look good
+                        </button>
+                        <button onClick={() => answer("neither")}>
+                          Neither
+                        </button>
+                        <button onClick={() => answer("skip")}>
+                          Not enough info
+                        </button>
+                      </div>
+                      <div className="comparison-foot">
+                        <p>
+                          We ask only when a comparison could help your
+                          decision.
+                        </p>
+                        <button
+                          className="text-link"
+                          onClick={() => {
+                            setShowCompare(false);
+                            scrollTo("decision-content");
+                          }}
+                        >
+                          See my places <ArrowRight size={18} />
+                        </button>
+                      </div>
+                    </section>
+                  ) : (
+                    selectedPlace && (
+                      <section
+                        className="place-result"
+                        aria-labelledby="decision-title"
+                      >
+                        <div className="result-heading">
+                          <div>
+                            <p className="section-label">
+                              {selectedRank === 0
+                                ? "Leading your shortlist"
+                                : "Another point of view"}
+                            </p>
+                            <h1 id="decision-title" tabIndex={-1}>
+                              {selectedPlace.name}
+                            </h1>
+                          </div>
+                          <span className="result-rank">
+                            {String(selectedRank + 1).padStart(2, "0")}
+                            <span> / {eligible.length}</span>
                           </span>
                         </div>
-                        <p>{selectedPlace.description}</p>
+                        <PlaceImage
+                          key={selectedPlace.id}
+                          place={selectedPlace}
+                          className="result-photo"
+                        />
+                        <div className="place-detail-heading">
+                          <span className="place-category">
+                            {selectedPlace.category ?? "New York place"}
+                          </span>
+                          <button className="text-link" onClick={openMap}>
+                            <Map size={17} /> Explore on map
+                          </button>
+                        </div>
+                        <p className="place-description">
+                          {selectedPlace.description}
+                        </p>
                         <div className="address-line">
-                          <MapPin size={14} />
+                          <MapPin size={19} />
                           <span>
                             {selectedPlace.address ??
                               `${selectedPlace.lat.toFixed(4)}, ${selectedPlace.lon.toFixed(4)}`}
@@ -805,300 +941,411 @@ export default function App() {
                         </div>
                         <div className="place-actions">
                           <a
+                            className="primary-button"
                             href={directions(selectedPlace)}
                             target="_blank"
                             rel="noreferrer"
                           >
-                            Get directions
-                            <ArrowUpRight size={14} />
+                            Get directions <ArrowUpRight size={20} />
                           </a>
                           {selectedPlace.website && (
                             <a
+                              className="secondary-button"
                               href={selectedPlace.website}
                               target="_blank"
                               rel="noreferrer"
                             >
-                              Venue website
-                              <ExternalLink size={13} />
+                              Venue website <ExternalLink size={17} />
                             </a>
                           )}
                         </div>
                         <p className="venue-note">
-                          Check current entry, opening, prices, and
-                          accessibility directly.
+                          Check current opening, entry, prices, and
+                          accessibility with the venue.
                         </p>
-                      </div>
-                    )}
-                    {decision?.question && currentPair && showCompare ? (
-                      <section
-                        className="comparison"
-                        aria-labelledby="comparison-title"
-                      >
-                        <div className="comparison-kicker">
-                          <Sparkles size={14} />
-                          <span>ONE USEFUL QUESTION</span>
-                          <button
-                            onClick={() => setShowCompare(false)}
-                            aria-label="Collapse comparison"
-                          >
-                            <ChevronDown size={16} />
-                          </button>
-                        </div>
-                        <h2 id="comparison-title">
-                          Which would you rather
-                          <br />
-                          <em>try for this outing?</em>
-                        </h2>
-                        <p className="comparison-intro">
-                          You don’t need to have been to either. Pick what draws
-                          you in.
-                        </p>
-                        <div className="comparison-pair">
-                          {currentPair.map((p, i) => (
+                        <div className="why-place">
+                          <div className="why-icon">
+                            <Layers3 size={25} />
+                          </div>
+                          <div>
+                            <h2>Why it’s in your world.</h2>
+                            <p>
+                              {evidence.references[selectedLens].name} puts this
+                              place at #
+                              {evidence.ranks[selectedLens].indexOf(
+                                selectedPlace.id,
+                              ) + 1}{" "}
+                              within your {evidence.places.length}-place
+                              shortlist.{" "}
+                              {manual
+                                ? "Your explicit balance determines its position."
+                                : decision.answered
+                                  ? "Your comparison answers help determine its current position."
+                                  : "Your references currently have equal emphasis."}
+                            </p>
                             <button
-                              key={p.id}
-                              onClick={() => answer(i === 0 ? "a" : "b")}
-                              className="comparison-option"
+                              className="text-link"
+                              onClick={() => setModal("evidence")}
                             >
-                              <PlaceImage place={p} />
-                              <span className="option-letter">
-                                {i === 0 ? "A" : "B"}
-                              </span>
-                              <strong>{p.name}</strong>
-                              <small>
-                                {p.description.slice(0, 115)}
-                                {p.description.length > 115 ? "…" : ""}
-                              </small>
-                              <span className="option-choose">
-                                I’d try this
-                                <ArrowUpRight size={14} />
-                              </span>
+                              Follow the evidence <ArrowUpRight size={16} />
+                            </button>
+                          </div>
+                        </div>
+                        {decision.question ? (
+                          <button
+                            className="refine-button"
+                            onClick={() => {
+                              setShowCompare(true);
+                              scrollTo("decision-content");
+                            }}
+                          >
+                            <Sparkles size={20} />
+                            <span>
+                              Still curious?
+                              <strong>
+                                A comparison could refine your choice.
+                              </strong>
+                            </span>
+                            <ArrowRight size={22} />
+                          </button>
+                        ) : (
+                          <div className="stop-note">
+                            <Check size={20} />
+                            <p>
+                              {manual
+                                ? "Your explicit balance is in charge. Return to your answers to resume learning."
+                                : decision.answered === 3
+                                  ? "Three comparisons complete. Your considered shortlist is ready."
+                                  : answers.length >= 2 &&
+                                      answers
+                                        .slice(-2)
+                                        .every((a) => a.choice === "skip")
+                                    ? "You skipped two comparisons. Here’s your available shortlist; your relative preference remains uncertain."
+                                    : decision.answered > 0
+                                      ? "Your shortlist is ready. No further comparison is needed under this decision policy."
+                                      : "Your shortlist is ready. No further comparison clears the benefit threshold under this model."}
+                              <button
+                                className="text-link"
+                                onClick={() => setModal("evidence")}
+                              >
+                                How was this decided? <ArrowUpRight size={15} />
+                              </button>
+                            </p>
+                          </div>
+                        )}
+                      </section>
+                    )
+                  )}
+                </section>
+                <aside
+                  className="decision-sidebar"
+                  aria-label="Your developing shortlist"
+                >
+                  <div className="sidebar-heading">
+                    <div>
+                      <p className="section-label">Taking shape</p>
+                      <h2>Your places.</h2>
+                    </div>
+                    <button
+                      className="icon-button"
+                      aria-label="Adjust your cultural balance"
+                      onClick={() => setModal("balance")}
+                    >
+                      <SlidersHorizontal size={21} />
+                    </button>
+                  </div>
+                  <AnimatedShortlist
+                    evidence={evidence}
+                    decision={decision}
+                    selected={selectedPlace?.id ?? null}
+                    onSelect={pickPlace}
+                  />
+                  {answers.length > 0 && top && (
+                    <div
+                      className="decision-change"
+                      key={`${revision}-${manual ? "manual" : "answers"}`}
+                    >
+                      <span className="change-icon">↗</span>
+                      <div>
+                        <strong>
+                          {manual
+                            ? "You set the direction."
+                            : decision.vetoes.length > 0
+                              ? "Your choices shape the list."
+                              : decision.answered === 0
+                                ? "No relative preference inferred."
+                                : leadingChanged
+                                  ? "Your first pick changed."
+                                  : "Your first pick held its place."}
+                        </strong>
+                        <p>
+                          {manual
+                            ? "This order uses your explicit balance."
+                            : decision.vetoes.length > 0
+                              ? `${decision.vetoes.length} places ruled out. You can undo any choice.`
+                              : decision.answered === 0
+                                ? "Both and skip keep the relative balance unchanged."
+                                : leadingChanged
+                                  ? `${evidence.places.find((p) => p.id === top.id)?.name} now leads after your comparisons.`
+                                  : "Your comparisons refined the balance. The leading place stayed the same."}
+                        </p>
+                        <button
+                          className="text-link"
+                          onClick={() => setModal("history")}
+                        >
+                          Review choices <History size={15} />
+                        </button>
+                      </div>
+                    </div>
+                  )}
+                  <details className="before-after">
+                    <summary>
+                      What changed? <ArrowDown size={17} />
+                    </summary>
+                    <p>
+                      Initial equal emphasis →{" "}
+                      {manual
+                        ? "your explicit balance"
+                        : "your current decision"}
+                    </p>
+                    {eligible.slice(0, 3).map((r, i) => {
+                      const before =
+                        (initialDecision?.ranking.findIndex(
+                          (p) => p.id === r.id,
+                        ) ?? -1) + 1;
+                      return (
+                        <div key={r.id}>
+                          <span>
+                            {evidence.places.find((p) => p.id === r.id)?.name}
+                          </span>
+                          <strong>
+                            {before || "—"} <ArrowRight size={14} /> {i + 1}
+                          </strong>
+                        </div>
+                      );
+                    })}
+                    <p>
+                      Positions within this shortlist, not enjoyment
+                      probabilities.
+                    </p>
+                  </details>
+                  <button className="map-launch" onClick={openMap}>
+                    <span className="mini-map" aria-hidden="true">
+                      <MapPin size={24} />
+                    </span>
+                    <span>
+                      <strong>Put it on the map.</strong>
+                      <span>Explore all {eligible.length} places</span>
+                    </span>
+                    <ArrowUpRight size={21} />
+                  </button>
+                  <div className="result-actions">
+                    <button
+                      onClick={() => {
+                        setSaved(storageOk);
+                        setNotice(
+                          storageOk
+                            ? "Your decision is saved on this device."
+                            : "Browser storage is unavailable. Export your preferences to keep them.",
+                        );
+                      }}
+                    >
+                      <Bookmark size={18} />
+                      {saved && storageOk
+                        ? "Saved here"
+                        : "Save on this device"}
+                    </button>
+                    <button onClick={exportBrief}>
+                      <Download size={18} />
+                      Field notes
+                    </button>
+                    <button onClick={() => setModal("history")}>
+                      <History size={18} />
+                      Edit choices
+                    </button>
+                    <button onClick={() => setModal("evidence")}>
+                      <Info size={18} />
+                      Why these places?
+                    </button>
+                  </div>
+                  <button
+                    className="refresh-link"
+                    onClick={() => void findPlaces()}
+                  >
+                    <RotateCcw size={15} />
+                    Retrieved {prettyTime(evidence.retrievedAt)} · Refresh
+                  </button>
+                </aside>
+              </div>
+              {mapVisited && (
+                <section
+                  className="place-explorer"
+                  id="place-explorer"
+                  hidden={!mapOpen}
+                  aria-label="Explore your places"
+                >
+                  <h1 className="sr-only">Explore your New York places</h1>
+                  <div className="explorer-heading">
+                    <button
+                      className="back-link"
+                      onClick={() => {
+                        setMapOpen(false);
+                        scrollTo("decision-content");
+                      }}
+                    >
+                      <ArrowLeft size={18} /> Back to your places
+                    </button>
+                    <div className="map-view-switch">
+                      <button
+                        aria-pressed={view === "city"}
+                        onClick={() => setView("city")}
+                      >
+                        <Map size={17} /> City map
+                      </button>
+                      <button
+                        aria-pressed={view === "taste"}
+                        onClick={() => setView("taste")}
+                      >
+                        <Layers3 size={17} /> Connections
+                      </button>
+                    </div>
+                  </div>
+                  <div className="explorer-grid">
+                    <Suspense
+                      fallback={
+                        <div className="map-status" role="status">
+                          Opening your map…
+                        </div>
+                      }
+                    >
+                      <MapView
+                        evidence={evidence}
+                        decision={decision}
+                        selected={selectedPlace?.id ?? null}
+                        onSelect={setSelected}
+                        view={view}
+                        active={mapOpen}
+                      />
+                    </Suspense>
+                    <aside className="map-place-details">
+                      {selectedPlace && (
+                        <>
+                          <PlaceImage
+                            key={selectedPlace.id}
+                            place={selectedPlace}
+                          />
+                          <span className="place-category">
+                            {selectedPlace.category ?? "New York place"}
+                          </span>
+                          <h2>{selectedPlace.name}</h2>
+                          <p>{selectedPlace.description}</p>
+                          <div className="address-line">
+                            <MapPin size={17} />
+                            <span>
+                              {selectedPlace.address ??
+                                "Coordinates available in directions"}
+                            </span>
+                          </div>
+                          <a
+                            className="primary-button"
+                            href={directions(selectedPlace)}
+                            target="_blank"
+                            rel="noreferrer"
+                          >
+                            Get directions <ArrowUpRight size={18} />
+                          </a>
+                        </>
+                      )}
+                      <details className="all-places" open>
+                        <summary>All {eligible.length} places</summary>
+                        <div>
+                          {eligible.map((r, i) => (
+                            <button
+                              key={r.id}
+                              aria-pressed={selectedPlace?.id === r.id}
+                              onClick={() => setSelected(r.id)}
+                            >
+                              <span>{i + 1}</span>
+                              {evidence.places.find((p) => p.id === r.id)?.name}
+                              <ArrowUpRight size={16} />
                             </button>
                           ))}
                         </div>
-                        <div className="comparison-alternatives">
-                          <button onClick={() => answer("both")}>
-                            Both look good
-                          </button>
-                          <button onClick={() => answer("neither")}>
-                            Neither
-                          </button>
-                          <button onClick={() => answer("skip")}>
-                            Not enough info
-                          </button>
-                        </div>
-                      </section>
-                    ) : decision?.question ? (
-                      <button
-                        className="reopen-comparison"
-                        onClick={() => setShowCompare(true)}
-                      >
-                        A comparison could refine this
-                        <ArrowUpRight size={15} />
-                      </button>
-                    ) : (
-                      <div className="stop-note">
-                        <Check size={16} />
-                        <p>
-                          {manual
-                            ? "You set the balance. Switch back to your answers to resume learning."
-                            : decision?.answered === 3
-                              ? "Three choices, a clearer direction. Your current shortlist is ready."
-                              : decision?.reason}
-                        </p>
-                      </div>
-                    )}
-                    <div className="result-actions">
-                      <button
-                        onClick={() => {
-                          setSaved(true);
-                          setNotice(
-                            storageOk
-                              ? "Your current decision is saved on this device."
-                              : "Browser storage is unavailable. Export your preferences to keep them.",
-                          );
-                        }}
-                      >
-                        <Bookmark size={15} />
-                        {saved ? "Saved here" : "Keep this view"}
-                      </button>
-                      <button onClick={exportBrief}>
-                        <Download size={15} />
-                        Field notes
-                      </button>
-                      <button onClick={() => setModal("history")}>
-                        <History size={15} />
-                        Edit choices
-                      </button>
-                    </div>
-                    <button
-                      className="refresh-link"
-                      disabled={busy}
-                      onClick={() => void findPlaces()}
-                    >
-                      <RotateCcw size={12} />
-                      {busy
-                        ? "Refreshing live evidence…"
-                        : `Retrieved ${prettyTime(evidence.retrievedAt)} · Refresh evidence`}
-                    </button>
-                  </>
-                )}
-              </>
-            )}
-            {error && (
-              <div className="error-message" role="alert">
-                <Info size={17} />
-                <div>
-                  <strong>That connection needs another try.</strong>
-                  <p>{error}</p>
-                </div>
-                <button aria-label="Dismiss error" onClick={() => setError("")}>
-                  <X size={14} />
-                </button>
-              </div>
-            )}
-            {notice && (
-              <div className="notice-message" role="status">
-                <Check size={14} />
-                <p>{notice}</p>
-                <button
-                  aria-label="Dismiss notification"
-                  onClick={() => setNotice("")}
-                >
-                  <X size={13} />
-                </button>
-              </div>
-            )}
-            {!storageOk && (
-              <p className="storage-warning">
-                Local storage is unavailable in this browser. Export preferences
-                to keep your choices.
-              </p>
-            )}
-            <footer className="panel-footer">
-              <span>
-                POWERED BY{" "}
-                <a
-                  href="https://www.qloo.com/"
-                  target="_blank"
-                  rel="noreferrer"
-                >
-                  Qloo
-                </a>
-              </span>
-              <button onClick={() => setModal("about")}>
-                Private by design
-                <ArrowUpRight size={11} />
-              </button>
-            </footer>
-          </div>
-        </section>
-        <section className="map-panel" aria-label="Explore your places">
-          <MapView
-            evidence={evidence}
-            decision={decision}
-            selected={selectedPlace?.id ?? null}
-            onSelect={setSelected}
-            view={view}
-          />
-          <div className="map-topbar">
-            <span className="map-location">
-              <MapPin size={13} />
-              New York City<span className="area-label">EDITION 001</span>
-            </span>
-            {evidence && (
-              <div className="map-view-switch">
-                <button
-                  aria-pressed={view === "city"}
-                  onClick={() => setView("city")}
-                >
-                  <Map size={14} />
-                  City map
-                </button>
-                <button
-                  aria-pressed={view === "taste"}
-                  onClick={() => setView("taste")}
-                >
-                  <Layers3 size={14} />
-                  Taste map
-                </button>
-              </div>
-            )}
-          </div>
-          {evidence && decision && (
-            <div className="perspective-card">
+                      </details>
+                    </aside>
+                  </div>
+                </section>
+              )}
+              {selectedPlace && !comparing && baselineRank > 0 && (
+                <span className="sr-only">
+                  Initial equal-emphasis rank {baselineRank}; current rank{" "}
+                  {selectedRank + 1}.
+                </span>
+              )}
+            </>
+          )
+        )}
+        <div className="feedback-area">
+          {error && (
+            <div className="error-message" role="alert">
+              <Info size={20} />
               <div>
-                <span className="eyebrow">YOUR CURRENT PERSPECTIVE</span>
-                <button
-                  aria-label="How your cultural balance works"
-                  onClick={() => setModal("balance")}
-                >
-                  <ArrowUpRight size={18} />
-                </button>
+                <strong>That connection needs another try.</strong>
+                <p>{error}</p>
               </div>
-              <div className="balance-bar">
-                {decision.weights.map((w, i) => (
-                  <span
-                    key={i}
-                    className={`lens-fill-${i}`}
-                    style={{ width: `${w * 100}%` }}
-                  />
-                ))}
-              </div>
-              <div className="balance-labels">
-                {evidence.references.map((r, i) => (
-                  <span key={r.id}>
-                    <i className={`lens-fill-${i}`} />
-                    <span>{r.name}</span>
-                    <strong>{Math.round(decision.weights[i] * 100)}%</strong>
-                  </span>
-                ))}
-              </div>
-              <span className="balance-disclaimer">
-                {manual
-                  ? "Your explicit balance"
-                  : "Modeled emphasis from your answers"}{" "}
-                · not a taste probability
-              </span>
-            </div>
-          )}
-          {!evidence && (
-            <div className="map-bottom-caption">
-              <span>
-                ONE CITY.
-                <br />
-                <em>Your point of view.</em>
-              </span>
               <button
-                aria-label="Read how PARALLAX works"
-                onClick={() => setModal("about")}
+                className="icon-button"
+                aria-label="Dismiss error"
+                onClick={() => setError("")}
               >
-                <ArrowUpRight size={24} />
+                <X size={18} />
               </button>
             </div>
           )}
-          {evidence && selectedPlace && (
-            <div className="map-place-label">
-              <span>
-                {selectedRank >= 0
-                  ? String(selectedRank + 1).padStart(2, "0")
-                  : "—"}
-              </span>
-              <div>
-                <strong>{selectedPlace.name}</strong>
-                <small>{selectedPlace.category ?? "New York City"}</small>
-              </div>
-              <a
-                href={directions(selectedPlace)}
-                target="_blank"
-                rel="noreferrer"
-                aria-label={`Directions to ${selectedPlace.name}`}
+          {notice && (
+            <div className="notice-message" role="status">
+              <Check size={19} />
+              <p>{notice}</p>
+              <button
+                className="icon-button"
+                aria-label="Dismiss notification"
+                onClick={() => setNotice("")}
               >
-                <ArrowUpRight size={18} />
-              </a>
+                <X size={18} />
+              </button>
             </div>
           )}
-        </section>
+          {!storageOk && (
+            <p className="storage-warning">
+              Local storage is unavailable. Export your preferences to keep your
+              choices.
+            </p>
+          )}
+        </div>
+        <footer className="site-footer">
+          <a className="footer-wordmark" href="/">
+            parallax↗
+          </a>
+          <p>
+            Cultural connections by{" "}
+            <a href="https://www.qloo.com/" target="_blank" rel="noreferrer">
+              Qloo
+            </a>
+            . Direction by you.
+          </p>
+          <div>
+            <button onClick={() => setModal("about")}>
+              How it works & privacy
+            </button>
+            <a
+              href="https://github.com/kathir-iTech/parallax"
+              target="_blank"
+              rel="noreferrer"
+            >
+              Source <ArrowUpRight size={15} />
+            </a>
+          </div>
+        </footer>
       </main>
       <input
         type="file"
@@ -1310,8 +1557,9 @@ export default function App() {
                 </div>
                 <p className="fine-print">
                   Preference exports include cultural identities and your
-                  explicit answers. They do not embed provider descriptions,
-                  images, credentials, or a fresh-result claim.
+                  explicit answers and balance when set. They do not embed
+                  provider descriptions, images, credentials, or a fresh-result
+                  claim.
                 </p>
               </>
             )}
