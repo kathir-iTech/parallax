@@ -1,4 +1,4 @@
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { ArrowUpRight, Check, Disc3, Film, Search, X } from "lucide-react";
 import type { Reference } from "../core/types.ts";
 import { resolveReferences } from "./api.ts";
@@ -26,6 +26,13 @@ export function ReferenceInput({
     [error, setError] = useState("");
   const pending = useRef<AbortController | null>(null),
     revision = useRef(0);
+  useEffect(
+    () => () => {
+      revision.current++;
+      pending.current?.abort();
+    },
+    [],
+  );
   const run = async () => {
     if (query.trim().length < 2 || busy) return;
     const rev = ++revision.current;

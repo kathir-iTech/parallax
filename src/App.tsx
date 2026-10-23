@@ -104,6 +104,7 @@ export default function App() {
     [storageOk, setStorageOk] = useState(true);
   const [showCompare, setShowCompare] = useState(true),
     [saved, setSaved] = useState(false);
+  const [inputEpoch, setInputEpoch] = useState(0);
   const pending = useRef<AbortController | null>(null),
     generation = useRef(0),
     importInput = useRef<HTMLInputElement>(null),
@@ -130,9 +131,10 @@ export default function App() {
   const eligible = decision?.ranking ?? [];
   useEffect(() => {
     let mounted = true;
+    const hydrationGeneration = generation.current;
     void loadProfile()
       .then((p: Profile | undefined) => {
-        if (!mounted) return;
+        if (!mounted || generation.current !== hydrationGeneration) return;
         if (p?.schema === 1 && p.references?.length >= 2) {
           setReferences(p.references);
           setKinds(p.references.map((r) => r.kind));
@@ -377,6 +379,7 @@ export default function App() {
     invalidate();
     setExampleBusy(false);
     setReferences(noRefs);
+    setInputEpoch((value) => value + 1);
     setKinds(["artist", "movie"]);
     setModal(null);
     await saveProfile(null).catch(() => setStorageOk(false));
@@ -550,7 +553,7 @@ export default function App() {
                 <div className="reference-stack">
                   {references.map((r, i) => (
                     <ReferenceInput
-                      key={`${i}-${kinds[i]}`}
+                      key={`${i}-${kinds[i]}-${inputEpoch}`}
                       index={i}
                       value={r}
                       kind={kinds[i]}
