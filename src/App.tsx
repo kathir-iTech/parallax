@@ -192,7 +192,7 @@ export default function App() {
     const timer = setTimeout(
       () =>
         modalRef.current
-          ?.querySelector<HTMLElement>("button, a, input, select")
+          ?.querySelector<HTMLElement>("button, a, input, select, summary")
           ?.focus(),
       30,
     );
@@ -203,7 +203,7 @@ export default function App() {
       }
       if (e.key !== "Tab") return;
       const items = modalRef.current?.querySelectorAll<HTMLElement>(
-        'button:not(:disabled), a[href], input, select, [tabindex="0"]',
+        'button:not(:disabled), a[href], input, select, summary, [tabindex="0"]',
       );
       if (!items?.length) return;
       const first = items[0],
@@ -480,7 +480,7 @@ export default function App() {
       <a className="skip-link" href="#workspace">
         Skip to the experience
       </a>
-      <header className="site-header">
+      <header className="site-header" inert={Boolean(modal)}>
         <a className="brand" href="/" aria-label="PARALLAX home">
           <svg viewBox="0 0 38 36" aria-hidden="true">
             <path d="M4 31V5h15a9 9 0 0 1 0 18H4m12 8V5h12a9 9 0 0 1 0 18H16" />
@@ -517,6 +517,8 @@ export default function App() {
       </header>
       <main
         id="workspace"
+        tabIndex={-1}
+        inert={Boolean(modal)}
         className={`workspace ${evidence ? "has-results" : ""}`}
       >
         <section className="editor-panel" aria-label="Cultural place discovery">
@@ -1097,6 +1099,7 @@ export default function App() {
       </main>
       <input
         type="file"
+        tabIndex={-1}
         accept="application/json,.json"
         ref={importInput}
         className="sr-only"

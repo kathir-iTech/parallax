@@ -1,0 +1,111 @@
+/* Secondary copy keeps AA text contrast on the warm paper surfaces. */
+.kind-switch button,
+.add-reference > span,
+.example-block > span,
+.intro-footer p,
+.panel-footer,
+.panel-footer button,
+.reference-label,
+.confirmed-reference span,
+.identity-results small,
+.identity-results > .eyebrow,
+.reference-input input::placeholder,
+.reference-input small,
+.result-summary,
+.result-eyebrow > span:last-child,
+.shortlist-heading .eyebrow,
+.shortlist-card-text small,
+.shortlist-card-text small span,
+.detail-caption,
+.detail-caption .eyebrow,
+.selected-details > p.venue-note,
+.comparison-intro,
+.comparison-option small,
+.comparison-alternatives button,
+.balance-disclaimer,
+.balance-labels > span,
+.refresh-link,
+.modal > .eyebrow,
+.modal > p.fine-print,
+.modal-utilities button,
+.text-link,
+.history-item > .eyebrow,
+.history-item select,
+.history-empty,
+.evidence-source small,
+.feature-rows small,
+.modal details p,
+.weight-controls strong,
+.agent-flow,
+.area-label,
+.map-view-switch button,
+.map-footnote,
+.map-footnote > span:last-child,
+.map-place-label small,
+.chart-heading .eyebrow,
+.chart-heading p,
+.chart-note {
+  color: #58664f;
+}
+.rank-number,
+.address-line,
+.result-actions button,
+.perspective-card .eyebrow,
+.modal summary,
+.modal p code,
+.empty-decision p,
+.photo-fallback {
+  color: #536746;
+}
+.evidence-source strong,
+.stop-note,
+.modal pre {
+  color: #4b623e;
+}
+.comparison-kicker button {
+  color: #5e6b52;
+}
+.reopen-comparison,
+.storage-warning {
+  color: #70542f;
+}
+.how-steps > div > span {
+  color: #8e6743;
+}
+.comparison-kicker {
+  color: #705b35;
+}
+.option-choose,
+.axis-y {
+  color: #4c633f;
+}
+.axis-x {
+  color: #815332;
+}
+.map-annotation {
+  color: #4c613c;
+}
+.icon-button,
+.modal-close,
+.history-item button,
+.search-submit {
+  color: #5e6b52;
+}
+.site-header nav button span {
+  opacity: 1;
+  color: #626d58;
+}
+.notice-message {
+  color: #4e6542;
+}
+.error-message {
+  color: #82462b;
+}
+.loading-note {
+  color: #59684d;
+}
+.map-footnote {
+  background: #f4f0e8f5;
+  padding: 5px 7px;
+  border-radius: 2px;
+}

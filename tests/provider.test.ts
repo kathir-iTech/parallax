@@ -8,10 +8,12 @@ test("geographic admission requires actual coordinates and excludes closed place
   const e = {
     entity_id: id(1),
     name: "Test",
+    subtype: "urn:entity:place",
     location: { lat: 40.76, lon: -73.98 },
     properties: {},
   };
   assert.ok(placeFrom(e));
+  assert.equal(placeFrom({ ...e, subtype: "urn:entity:movie" }), null);
   assert.equal(placeFrom({ ...e, location: {} }), null);
   assert.equal(placeFrom({ ...e, location: { lat: 51.5, lon: -0.1 } }), null);
   assert.equal(placeFrom({ ...e, properties: { is_closed: true } }), null);

@@ -32,8 +32,8 @@ export function MapView({
       .then((lib) => {
         if (disposed || !container.current) return;
         try {
-        lib.setWorkerUrl(workerUrl);
-        const m = new lib.Map({
+          lib.setWorkerUrl(workerUrl);
+          const m = new lib.Map({
             container: container.current,
             style: "https://tiles.openfreemap.org/styles/positron",
             center: [-73.975, 40.756],
@@ -142,6 +142,7 @@ export function MapView({
       <div
         className="real-map"
         ref={container}
+        role="region"
         aria-label="Interactive map of New York place candidates"
       />
       <div className="map-grain" />

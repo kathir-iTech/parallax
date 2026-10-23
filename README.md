@@ -10,7 +10,7 @@ The person answers what they would rather try. Up to three relative choices refi
 
 ## Run
 
-Node 22.19+; use the committed npm lockfile.
+Node 24.x; use the committed npm lockfile.
 
 ```sh
 npm ci

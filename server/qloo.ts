@@ -61,6 +61,8 @@ export function referenceFrom(
   };
 }
 export function placeFrom(e: Obj): Place | null {
+  const types = [...(Array.isArray(e.types) ? e.types : []), e.subtype, e.type];
+  if (!types.includes("urn:entity:place")) return null;
   const p = object(e.properties),
     l = object(e.location);
   const lat = number(l.lat),
@@ -200,17 +202,15 @@ export class Qloo {
     // At most two calls concurrently. Each attempt reserves quota before transmission.
     for (let start = 0; start < references.length; start += 2) {
       const batch = await Promise.all(
-        references
-          .slice(start, start + 2)
-          .map((r) =>
-            this.request("/v2/insights", {
-              "filter.type": "urn:entity:place",
-              "signal.interests.entities": r.id,
-              "filter.location.query": "New York City",
-              take: 10,
-              "feature.explainability": "true",
-            }),
-          ),
+        references.slice(start, start + 2).map((r) =>
+          this.request("/v2/insights", {
+            "filter.type": "urn:entity:place",
+            "signal.interests.entities": r.id,
+            "filter.location.query": "New York City",
+            take: 10,
+            "feature.explainability": "true",
+          }),
+        ),
       );
       lists.push(...batch);
     }
@@ -238,16 +238,14 @@ export class Qloo {
     ];
     for (let start = 0; start < signals.length; start += 2) {
       const batch = await Promise.all(
-        signals
-          .slice(start, start + 2)
-          .map((signal) =>
-            this.request("/v2/insights", {
-              "filter.type": "urn:entity:place",
-              "filter.results.entities": filter,
-              "signal.interests.entities": signal,
-              take: pool.length,
-            }),
-          ),
+        signals.slice(start, start + 2).map((signal) =>
+          this.request("/v2/insights", {
+            "filter.type": "urn:entity:place",
+            "filter.results.entities": filter,
+            "signal.interests.entities": signal,
+            take: pool.length,
+          }),
+        ),
       );
       for (const ranked of batch)
         ranks.push([
