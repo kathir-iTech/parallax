@@ -55,21 +55,29 @@ function PlaceImage({
   className?: string;
 }) {
   const [broken, setBroken] = useState(false);
+  const [loaded, setLoaded] = useState(false);
   return (
     <div className={`place-image ${className}`}>
-      {place.image && !broken ? (
-        <img
-          src={place.image}
-          alt={place.name}
-          loading="lazy"
-          onError={() => setBroken(true)}
-          referrerPolicy="no-referrer"
-        />
-      ) : (
-        <div className="photo-fallback">
+      {!loaded && (
+        <div className="photo-fallback" title="Venue photograph has not loaded">
           <MapPin size={24} />
           <span>{place.category ?? "New York place"}</span>
         </div>
+      )}
+      {place.image && !broken && (
+        <img
+          src={place.image}
+          alt={place.name}
+          loading="eager"
+          decoding="async"
+          style={{ opacity: loaded ? 1 : 0 }}
+          onLoad={(event) => {
+            if (event.currentTarget.naturalWidth >= 16) setLoaded(true);
+            else setBroken(true);
+          }}
+          onError={() => setBroken(true)}
+          referrerPolicy="no-referrer"
+        />
       )}
     </div>
   );
