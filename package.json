@@ -1,6 +1,6 @@
 {
   "name": "parallax-culture",
-  "version": "1.1.1",
+  "version": "1.2.0",
   "private": true,
   "type": "module",
   "license": "MIT",
@@ -14,7 +14,8 @@
     "evaluate": "tsx scripts/evaluate.ts",
     "mcp": "tsx agent/bridge.ts",
     "check": "tsc -b",
-    "test:browser": "playwright test"
+    "test:browser": "playwright test",
+    "photos:build": "tsx scripts/build-photos.ts"
   },
   "dependencies": {
     "@fontsource/dm-sans": "^5.3.0",
@@ -37,6 +38,7 @@
     "@vitejs/plugin-react": "^6.1.2",
     "axe-core": "4.14.0",
     "prettier": "^3.9.10",
+    "sharp": "0.35.5",
     "tsx": "^4.23.15",
     "typescript": "^7.0.2",
     "vite": "^8.3.4"

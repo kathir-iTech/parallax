@@ -32,7 +32,13 @@ import type {
 } from "../core/types.ts";
 import { advise, MODEL, NOISE, QUESTION_COST } from "../core/engine.ts";
 import { ReferenceInput } from "./ReferenceInput.tsx";
-import { AnimatedShortlist, CityArtwork, PlaceImage } from "./Experience.tsx";
+import {
+  AnimatedShortlist,
+  CityArtwork,
+  PhotoCredit,
+  PlaceImage,
+} from "./Experience.tsx";
+import { venuePhotos } from "./photos.ts";
 const MapView = lazy(() =>
   import("./MapView.tsx").then((module) => ({ default: module.MapView })),
 );
@@ -60,7 +66,7 @@ export default function App() {
     [error, setError] = useState(""),
     [notice, setNotice] = useState("");
   const [modal, setModalState] = useState<
-      "about" | "history" | "evidence" | "agent" | "balance" | null
+      "about" | "history" | "evidence" | "agent" | "balance" | "photos" | null
     >(null),
     [view, setView] = useState<"city" | "taste">("city");
   const [selected, setSelected] = useState<string | null>(null),
@@ -843,7 +849,11 @@ export default function App() {
                             className="comparison-option"
                           >
                             <div className="option-image">
-                              <PlaceImage key={p.id} place={p} />
+                              <PlaceImage
+                                key={p.id}
+                                place={p}
+                                use="comparison"
+                              />
                               <span className="option-letter">
                                 {i === 0 ? "A" : "B"}
                               </span>
@@ -877,6 +887,11 @@ export default function App() {
                         <button onClick={() => answer("skip")}>
                           Not enough info
                         </button>
+                      </div>
+                      <div className="comparison-photo-credits">
+                        {currentPair.map((p) => (
+                          <PhotoCredit key={p.id} place={p} />
+                        ))}
                       </div>
                       <div className="comparison-foot">
                         <p>
@@ -920,7 +935,9 @@ export default function App() {
                           key={selectedPlace.id}
                           place={selectedPlace}
                           className="result-photo"
+                          use="result"
                         />
+                        <PhotoCredit place={selectedPlace} />
                         <div className="place-detail-heading">
                           <span className="place-category">
                             {selectedPlace.category ?? "New York place"}
@@ -1233,7 +1250,9 @@ export default function App() {
                           <PlaceImage
                             key={selectedPlace.id}
                             place={selectedPlace}
+                            use="map"
                           />
+                          <PhotoCredit place={selectedPlace} />
                           <span className="place-category">
                             {selectedPlace.category ?? "New York place"}
                           </span>
@@ -1337,6 +1356,7 @@ export default function App() {
             <button onClick={() => setModal("about")}>
               How it works & privacy
             </button>
+            <button onClick={() => setModal("photos")}>Photography</button>
             <a
               href="https://github.com/kathir-iTech/parallax"
               target="_blank"
@@ -1475,6 +1495,52 @@ export default function App() {
                   Source and methodology
                   <ArrowUpRight size={14} />
                 </a>
+              </>
+            )}
+            {modal === "photos" && (
+              <>
+                <span className="eyebrow">THE CITY, THROUGH THEIR LENS</span>
+                <h2 id="modal-title">A closer look.</h2>
+                <p>
+                  Real photographs of real places, independently matched to
+                  venue identities. Photography illustrates the location; Qloo
+                  powers the cultural connections.
+                </p>
+                <p>
+                  Photographs may show earlier appearances. Cropped and resized
+                  editions retain the licenses below. If we haven’t verified a
+                  photograph, we show a placeholder.
+                </p>
+                <div className="photography-list">
+                  {venuePhotos.map((photo) => (
+                    <article key={photo.placeId}>
+                      <img
+                        src={photo.variants[0].src}
+                        width={photo.variants[0].width}
+                        height={photo.variants[0].height}
+                        alt=""
+                        loading="lazy"
+                        decoding="async"
+                      />
+                      <div>
+                        <h3>{photo.venue}</h3>
+                        <a href={photo.source} target="_blank" rel="noreferrer">
+                          {photo.title}
+                        </a>
+                        <p>
+                          {photo.author} ·{" "}
+                          <a
+                            href={photo.licenseUrl}
+                            target="_blank"
+                            rel="noreferrer"
+                          >
+                            {photo.license}
+                          </a>
+                        </p>
+                      </div>
+                    </article>
+                  ))}
+                </div>
               </>
             )}
             {modal === "history" && (

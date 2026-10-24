@@ -14,7 +14,7 @@ Answers update locally without further Qloo calls. Refreshing evidence or search
 
 ## Visual and motion behavior
 
-The entry illustration is original SVG artwork rather than a stock venue photograph. Provider photographs remain separate, with honest loading and unavailable states. Primary reading copy is 16–20px; smaller supporting labels are used sparingly. Comparison cards have large click targets and factual descriptions.
+The entry illustration is original SVG artwork. Venue photography uses an independently verified library of high-resolution photographs with responsive, locally hosted WebP editions. It matches stable Qloo venue identities; photography never changes the discovered candidate set or ranking. Unknown or failed images show an honest placeholder. Unreviewed provider images, which can be small thumbnails or logos, are not stretched into venue photographs. Captions and the Photography dialog preserve source and license credit. See [photography](PHOTOGRAPHY.md). Primary reading copy is 16–20px; smaller supporting labels are used sparingly. Comparison cards have large click targets and factual descriptions.
 
 Entry artwork has brief arrival animations. Discovery uses an indeterminate animation rather than an invented percentage. The comparison scene enters once per pair, and retained shortlist items move to their new positions. Text stays opaque while moving, and the modal backdrop animates independently from its content. Settled results stay still. CSS animation, shortlist motion, scrolling, and map camera animation respect reduced-motion preferences.
 

@@ -1,36 +1,77 @@
 import { useLayoutEffect, useRef, useState } from "react";
 import { ArrowUpRight, Disc3, Film, MapPin } from "lucide-react";
 import type { Decision, Evidence, Place } from "../core/types.ts";
+import {
+  photoFor,
+  photoSizes,
+  type PhotoUse,
+  type VenuePhoto,
+} from "./photos.ts";
 
 export function PlaceImage({
   place,
   className = "",
+  use = "thumbnail",
 }: {
   place: Place;
   className?: string;
+  use?: PhotoUse;
+}) {
+  const photo = photoFor(place);
+  return (
+    <VenuePhotoImage
+      key={`${place.id}:${photo?.asset ?? "unavailable"}`}
+      photo={photo}
+      className={className}
+      use={use}
+    />
+  );
+}
+
+function VenuePhotoImage({
+  photo,
+  className,
+  use,
+}: {
+  photo?: VenuePhoto;
+  className: string;
+  use: PhotoUse;
 }) {
   const [loaded, setLoaded] = useState(false),
     [broken, setBroken] = useState(false);
+  const preview =
+    photo?.variants.find((v) => v.width >= 960) ?? photo?.variants.at(-1);
   return (
-    <div className={`place-image ${className}`}>
-      {!loaded && (
+    <div
+      className={`place-image ${className}`}
+      data-photo-state={
+        broken || !photo ? "unavailable" : loaded ? "ready" : "loading"
+      }
+    >
+      {(!loaded || broken) && (
         <div className="photo-fallback">
-          <MapPin size={32} />
+          <MapPin size={32} aria-hidden="true" />
           <span>
-            {place.image && !broken
-              ? "Loading venue photo…"
-              : "Venue photo unavailable"}
+            {photo && !broken ? "Loading photograph…" : "A place to discover."}
           </span>
+          {(!photo || broken) && <small>Photograph unavailable</small>}
         </div>
       )}
-      {place.image && !broken && (
+      {photo && preview && !broken && (
         <img
-          src={place.image}
-          alt={place.name}
+          src={preview.src}
+          srcSet={photo.variants.map((v) => `${v.src} ${v.width}w`).join(", ")}
+          sizes={photoSizes[use]}
+          width={preview.width}
+          height={preview.height}
+          alt={use === "thumbnail" ? "" : photo.alt}
           decoding="async"
-          style={{ opacity: loaded ? 1 : 0 }}
+          loading={use === "thumbnail" || use === "map" ? "lazy" : "eager"}
+          fetchPriority={use === "result" ? "high" : "auto"}
+          style={{ opacity: loaded ? 1 : 0, objectPosition: photo.position }}
           onLoad={(event) =>
-            event.currentTarget.naturalWidth >= 16
+            event.currentTarget.naturalWidth > 0 &&
+            event.currentTarget.naturalHeight > 0
               ? setLoaded(true)
               : setBroken(true)
           }
@@ -39,6 +80,24 @@ export function PlaceImage({
         />
       )}
     </div>
+  );
+}
+
+export function PhotoCredit({ place }: { place: Place }) {
+  const photo = photoFor(place);
+  if (!photo) return null;
+  return (
+    <p className="photo-credit">
+      Photo:{" "}
+      <a href={photo.source} target="_blank" rel="noreferrer">
+        {photo.author}
+      </a>
+      <span aria-hidden="true"> · </span>
+      <a href={photo.licenseUrl} target="_blank" rel="noreferrer">
+        {photo.license}
+      </a>
+      <span> · Cropped & resized</span>
+    </p>
   );
 }
 

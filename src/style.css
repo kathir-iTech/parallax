@@ -952,6 +952,59 @@ html {
   text-align: center;
   font-size: 14px;
 }
+.photo-fallback > small {
+  font-size: 13px;
+  color: #57654d;
+}
+.photo-credit,
+.map-place-details > .photo-credit {
+  color: #53604f;
+  font-size: 13px;
+  line-height: 1.65;
+  margin: 10px 0 0;
+  overflow-wrap: anywhere;
+}
+.photo-credit a {
+  text-underline-offset: 3px;
+  text-decoration-thickness: 1px;
+}
+.comparison-photo-credits {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0 24px;
+}
+.photography-list {
+  display: grid;
+  gap: 22px;
+  margin-top: 28px;
+}
+.photography-list article {
+  display: grid;
+  grid-template-columns: 86px minmax(0, 1fr);
+  gap: 18px;
+  padding-bottom: 22px;
+  border-bottom: 1px solid var(--line);
+}
+.photography-list img {
+  width: 86px;
+  height: 104px;
+  object-fit: cover;
+  border-radius: 8px;
+}
+.photography-list h3 {
+  margin: 0 0 6px;
+}
+.photography-list a {
+  font-size: 14px;
+  overflow-wrap: anywhere;
+}
+.photography-list p {
+  font-size: 14px;
+  margin: 6px 0 0;
+}
+.shortlist-card .photo-fallback small {
+  display: none;
+}
 .option-letter {
   position: absolute;
   left: 16px;

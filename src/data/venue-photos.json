@@ -1,0 +1,836 @@
+[
+  {
+    "placeId": "50E6FD1D-FA14-4383-A7E9-FDEC343EDD8A",
+    "venue": "Top of The Rock",
+    "asset": "top-of-the-rock-eb8a06107639",
+    "title": "Sunset from Top of The Rock, Rockefeller Center (51197172512)",
+    "alt": "Sunset over Manhattan, photographed from the Top of the Rock observation deck.",
+    "author": "Domenico Convertini",
+    "source": "https://commons.wikimedia.org/wiki/File:Sunset_from_Top_of_The_Rock,_Rockefeller_Center_(51197172512).jpg",
+    "sourceFile": "File:Sunset from Top of The Rock, Rockefeller Center (51197172512).jpg",
+    "original": "https://upload.wikimedia.org/wikipedia/commons/6/6b/Sunset_from_Top_of_The_Rock%2C_Rockefeller_Center_%2851197172512%29.jpg",
+    "originalWidth": 6000,
+    "originalHeight": 4000,
+    "license": "CC BY-SA 2.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/2.0",
+    "changes": "Resized, cropped to 3:2, converted to WebP; metadata stripped. No generated detail.",
+    "position": "50% 52%",
+    "buildSignature": "714a34b643f74073026ee362ff66557b3e6ab8e293788b4fcd9aa4415b45b514",
+    "variants": [
+      {
+        "src": "/media/venues/top-of-the-rock-eb8a06107639-240.webp",
+        "width": 240,
+        "height": 160,
+        "bytes": 10996
+      },
+      {
+        "src": "/media/venues/top-of-the-rock-eb8a06107639-480.webp",
+        "width": 480,
+        "height": 320,
+        "bytes": 38410
+      },
+      {
+        "src": "/media/venues/top-of-the-rock-eb8a06107639-960.webp",
+        "width": 960,
+        "height": 640,
+        "bytes": 132402
+      },
+      {
+        "src": "/media/venues/top-of-the-rock-eb8a06107639-1600.webp",
+        "width": 1600,
+        "height": 1067,
+        "bytes": 314256
+      },
+      {
+        "src": "/media/venues/top-of-the-rock-eb8a06107639-2600.webp",
+        "width": 2600,
+        "height": 1733,
+        "bytes": 712812
+      },
+      {
+        "src": "/media/venues/top-of-the-rock-eb8a06107639-3200.webp",
+        "width": 3200,
+        "height": 2133,
+        "bytes": 1048178
+      }
+    ]
+  },
+  {
+    "placeId": "5FAFC6A6-45DB-4AC6-80B3-D7BD558420A8",
+    "venue": "Solomon R. Guggenheim Museum",
+    "asset": "guggenheim-3873d3eea45d",
+    "title": "Solomon R. Guggenheim Museum (48059131351)",
+    "alt": "Frank Lloyd Wright’s spiral Guggenheim Museum facade on Fifth Avenue.",
+    "author": "Ajay Suresh",
+    "source": "https://commons.wikimedia.org/wiki/File:Solomon_R._Guggenheim_Museum_(48059131351).jpg",
+    "sourceFile": "File:Solomon R. Guggenheim Museum (48059131351).jpg",
+    "original": "https://upload.wikimedia.org/wikipedia/commons/f/ff/Solomon_R._Guggenheim_Museum_%2848059131351%29.jpg",
+    "originalWidth": 5265,
+    "originalHeight": 2962,
+    "license": "CC BY 2.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/2.0",
+    "changes": "Resized, cropped to 3:2, converted to WebP; metadata stripped. No generated detail.",
+    "position": "50% 50%",
+    "buildSignature": "662e62fcc729e39d769863c07a6d06c969dc4beb99d01dd698b14f58f79f5418",
+    "variants": [
+      {
+        "src": "/media/venues/guggenheim-3873d3eea45d-240.webp",
+        "width": 240,
+        "height": 160,
+        "bytes": 10956
+      },
+      {
+        "src": "/media/venues/guggenheim-3873d3eea45d-480.webp",
+        "width": 480,
+        "height": 320,
+        "bytes": 31728
+      },
+      {
+        "src": "/media/venues/guggenheim-3873d3eea45d-960.webp",
+        "width": 960,
+        "height": 640,
+        "bytes": 100400
+      },
+      {
+        "src": "/media/venues/guggenheim-3873d3eea45d-1600.webp",
+        "width": 1600,
+        "height": 1067,
+        "bytes": 251506
+      },
+      {
+        "src": "/media/venues/guggenheim-3873d3eea45d-2600.webp",
+        "width": 2600,
+        "height": 1733,
+        "bytes": 843054
+      },
+      {
+        "src": "/media/venues/guggenheim-3873d3eea45d-3200.webp",
+        "width": 3200,
+        "height": 2133,
+        "bytes": 1416638
+      }
+    ]
+  },
+  {
+    "placeId": "56674AEE-A6BD-4C0A-AD13-A6989B2D9054",
+    "venue": "Brooklyn Bridge",
+    "asset": "brooklyn-bridge-0b3be41c9c9b",
+    "title": "Brooklyn Bridge August 2017",
+    "alt": "Brooklyn Bridge’s pedestrian walkway and suspension cables above the East River.",
+    "author": "Arild Vågen",
+    "source": "https://commons.wikimedia.org/wiki/File:Brooklyn_Bridge_August_2017.jpg",
+    "sourceFile": "File:Brooklyn Bridge August 2017.jpg",
+    "original": "https://upload.wikimedia.org/wikipedia/commons/7/7c/Brooklyn_Bridge_August_2017.jpg",
+    "originalWidth": 5803,
+    "originalHeight": 3874,
+    "license": "CC BY-SA 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+    "changes": "Resized, cropped to 3:2, converted to WebP; metadata stripped. No generated detail.",
+    "position": "50% 48%",
+    "buildSignature": "eb52c444735e7cfc43b43a11c2e6c70ac6fc3ce84cb9d73c08492958d277423c",
+    "variants": [
+      {
+        "src": "/media/venues/brooklyn-bridge-0b3be41c9c9b-240.webp",
+        "width": 240,
+        "height": 160,
+        "bytes": 12734
+      },
+      {
+        "src": "/media/venues/brooklyn-bridge-0b3be41c9c9b-480.webp",
+        "width": 480,
+        "height": 320,
+        "bytes": 40744
+      },
+      {
+        "src": "/media/venues/brooklyn-bridge-0b3be41c9c9b-960.webp",
+        "width": 960,
+        "height": 640,
+        "bytes": 131408
+      },
+      {
+        "src": "/media/venues/brooklyn-bridge-0b3be41c9c9b-1600.webp",
+        "width": 1600,
+        "height": 1067,
+        "bytes": 306118
+      },
+      {
+        "src": "/media/venues/brooklyn-bridge-0b3be41c9c9b-2600.webp",
+        "width": 2600,
+        "height": 1733,
+        "bytes": 722950
+      },
+      {
+        "src": "/media/venues/brooklyn-bridge-0b3be41c9c9b-3200.webp",
+        "width": 3200,
+        "height": 2133,
+        "bytes": 1041568
+      }
+    ]
+  },
+  {
+    "placeId": "C41DBC4D-2F87-4298-A566-7DFA9B5143D1",
+    "venue": "Empire State Building",
+    "asset": "empire-state-52e1af05c90b",
+    "title": "View of Empire State Building from Rockefeller Center New York City dllu",
+    "alt": "The Empire State Building illuminated against Manhattan’s evening skyline.",
+    "author": "Dllu",
+    "source": "https://commons.wikimedia.org/wiki/File:View_of_Empire_State_Building_from_Rockefeller_Center_New_York_City_dllu.jpg",
+    "sourceFile": "File:View of Empire State Building from Rockefeller Center New York City dllu.jpg",
+    "original": "https://upload.wikimedia.org/wikipedia/commons/0/05/View_of_Empire_State_Building_from_Rockefeller_Center_New_York_City_dllu.jpg",
+    "originalWidth": 8207,
+    "originalHeight": 6167,
+    "license": "CC BY-SA 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+    "changes": "Resized, cropped to 3:2, converted to WebP; metadata stripped. No generated detail.",
+    "position": "50% 48%",
+    "buildSignature": "2fc4c50d0a52d205ff3528884517f20ec6bff40111125f13a1f6d91573e5ba6c",
+    "variants": [
+      {
+        "src": "/media/venues/empire-state-52e1af05c90b-240.webp",
+        "width": 240,
+        "height": 160,
+        "bytes": 9946
+      },
+      {
+        "src": "/media/venues/empire-state-52e1af05c90b-480.webp",
+        "width": 480,
+        "height": 320,
+        "bytes": 36560
+      },
+      {
+        "src": "/media/venues/empire-state-52e1af05c90b-960.webp",
+        "width": 960,
+        "height": 640,
+        "bytes": 127194
+      },
+      {
+        "src": "/media/venues/empire-state-52e1af05c90b-1600.webp",
+        "width": 1600,
+        "height": 1067,
+        "bytes": 303698
+      },
+      {
+        "src": "/media/venues/empire-state-52e1af05c90b-2600.webp",
+        "width": 2600,
+        "height": 1733,
+        "bytes": 685276
+      },
+      {
+        "src": "/media/venues/empire-state-52e1af05c90b-3200.webp",
+        "width": 3200,
+        "height": 2133,
+        "bytes": 983954
+      }
+    ]
+  },
+  {
+    "placeId": "994B684A-EE05-4B45-9833-B8F212192E50",
+    "venue": "Columbia University Libraries",
+    "asset": "butler-library-e8546c9a18b7",
+    "title": "Butler Library Columbia University",
+    "alt": "Butler Library, part of Columbia University Libraries, viewed across the campus lawn.",
+    "author": "JSquish",
+    "source": "https://commons.wikimedia.org/wiki/File:Butler_Library_Columbia_University.jpg",
+    "sourceFile": "File:Butler Library Columbia University.jpg",
+    "original": "https://upload.wikimedia.org/wikipedia/commons/a/aa/Butler_Library_Columbia_University.jpg",
+    "originalWidth": 5528,
+    "originalHeight": 3213,
+    "license": "CC BY-SA 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+    "changes": "Resized, cropped to 3:2, converted to WebP; metadata stripped. No generated detail.",
+    "position": "50% 50%",
+    "buildSignature": "2dd46dd9490183d3d53136fe02b07945285960651d7047a603e03b6140aa31b8",
+    "variants": [
+      {
+        "src": "/media/venues/butler-library-e8546c9a18b7-240.webp",
+        "width": 240,
+        "height": 160,
+        "bytes": 10122
+      },
+      {
+        "src": "/media/venues/butler-library-e8546c9a18b7-480.webp",
+        "width": 480,
+        "height": 320,
+        "bytes": 29510
+      },
+      {
+        "src": "/media/venues/butler-library-e8546c9a18b7-960.webp",
+        "width": 960,
+        "height": 640,
+        "bytes": 94548
+      },
+      {
+        "src": "/media/venues/butler-library-e8546c9a18b7-1600.webp",
+        "width": 1600,
+        "height": 1067,
+        "bytes": 226638
+      },
+      {
+        "src": "/media/venues/butler-library-e8546c9a18b7-2600.webp",
+        "width": 2600,
+        "height": 1733,
+        "bytes": 514084
+      },
+      {
+        "src": "/media/venues/butler-library-e8546c9a18b7-3200.webp",
+        "width": 3200,
+        "height": 2133,
+        "bytes": 734762
+      }
+    ]
+  },
+  {
+    "placeId": "CFA32EED-3DEB-41C6-A827-A7B3CA88FADB",
+    "venue": "New Museum",
+    "asset": "new-museum-e6b8b91c5981",
+    "title": "New Museum in New York City 2015",
+    "alt": "The stacked architectural volumes of the New Museum’s Bowery building in 2015.",
+    "author": "MusikAnimal",
+    "source": "https://commons.wikimedia.org/wiki/File:New_Museum_in_New_York_City_2015.JPG",
+    "sourceFile": "File:New Museum in New York City 2015.JPG",
+    "original": "https://upload.wikimedia.org/wikipedia/commons/6/65/New_Museum_in_New_York_City_2015.JPG",
+    "originalWidth": 4000,
+    "originalHeight": 6000,
+    "license": "CC BY-SA 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+    "changes": "Resized, cropped to 3:2, converted to WebP; metadata stripped. No generated detail.",
+    "position": "50% 35%",
+    "buildSignature": "646deb47a1d6da5d867cd4046010503b3bb6142a2f1426a8654716cf236f7c08",
+    "variants": [
+      {
+        "src": "/media/venues/new-museum-e6b8b91c5981-240.webp",
+        "width": 240,
+        "height": 160,
+        "bytes": 2460
+      },
+      {
+        "src": "/media/venues/new-museum-e6b8b91c5981-480.webp",
+        "width": 480,
+        "height": 320,
+        "bytes": 7358
+      },
+      {
+        "src": "/media/venues/new-museum-e6b8b91c5981-960.webp",
+        "width": 960,
+        "height": 640,
+        "bytes": 40424
+      },
+      {
+        "src": "/media/venues/new-museum-e6b8b91c5981-1600.webp",
+        "width": 1600,
+        "height": 1067,
+        "bytes": 168766
+      },
+      {
+        "src": "/media/venues/new-museum-e6b8b91c5981-2600.webp",
+        "width": 2600,
+        "height": 1733,
+        "bytes": 417058
+      },
+      {
+        "src": "/media/venues/new-museum-e6b8b91c5981-3200.webp",
+        "width": 3200,
+        "height": 2133,
+        "bytes": 593008
+      }
+    ]
+  },
+  {
+    "placeId": "FF8A43D9-BCD9-4B86-B5B6-6692EAFCEE1D",
+    "venue": "One World Trade Center",
+    "asset": "one-world-trade-center-7ac9607535e1",
+    "title": "One World Trade Center and New York Sunset",
+    "alt": "One World Trade Center rising above Lower Manhattan at sunset.",
+    "author": "ID 2649771",
+    "source": "https://commons.wikimedia.org/wiki/File:One_World_Trade_Center_and_New_York_Sunset.jpg",
+    "sourceFile": "File:One World Trade Center and New York Sunset.jpg",
+    "original": "https://upload.wikimedia.org/wikipedia/commons/7/77/One_World_Trade_Center_and_New_York_Sunset.jpg",
+    "originalWidth": 4178,
+    "originalHeight": 2785,
+    "license": "CC0",
+    "licenseUrl": "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
+    "changes": "Resized, cropped to 3:2, converted to WebP; metadata stripped. No generated detail.",
+    "position": "50% 45%",
+    "buildSignature": "9c15d4356d5a7b22c7b903e488f5f8d62f432bd50f0170cf5a604015c8414a57",
+    "variants": [
+      {
+        "src": "/media/venues/one-world-trade-center-7ac9607535e1-240.webp",
+        "width": 240,
+        "height": 160,
+        "bytes": 6678
+      },
+      {
+        "src": "/media/venues/one-world-trade-center-7ac9607535e1-480.webp",
+        "width": 480,
+        "height": 320,
+        "bytes": 19824
+      },
+      {
+        "src": "/media/venues/one-world-trade-center-7ac9607535e1-960.webp",
+        "width": 960,
+        "height": 640,
+        "bytes": 57154
+      },
+      {
+        "src": "/media/venues/one-world-trade-center-7ac9607535e1-1600.webp",
+        "width": 1600,
+        "height": 1067,
+        "bytes": 113540
+      },
+      {
+        "src": "/media/venues/one-world-trade-center-7ac9607535e1-2600.webp",
+        "width": 2600,
+        "height": 1733,
+        "bytes": 243174
+      },
+      {
+        "src": "/media/venues/one-world-trade-center-7ac9607535e1-3200.webp",
+        "width": 3200,
+        "height": 2133,
+        "bytes": 353076
+      }
+    ]
+  },
+  {
+    "placeId": "B2B057E1-F085-4B83-9C24-ED0110F8BEA2",
+    "venue": "Statue of Liberty",
+    "asset": "statue-of-liberty-a1440e8d1237",
+    "title": "Statue of Liberty, NY",
+    "alt": "The Statue of Liberty and its pedestal on Liberty Island, New York Harbor.",
+    "author": "William Warby",
+    "source": "https://commons.wikimedia.org/wiki/File:Statue_of_Liberty,_NY.jpg",
+    "sourceFile": "File:Statue of Liberty, NY.jpg",
+    "original": "https://upload.wikimedia.org/wikipedia/commons/d/d3/Statue_of_Liberty%2C_NY.jpg",
+    "originalWidth": 3558,
+    "originalHeight": 2668,
+    "license": "CC BY 2.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/2.0",
+    "changes": "Resized, cropped to 3:2, converted to WebP; metadata stripped. No generated detail.",
+    "position": "50% 42%",
+    "buildSignature": "9addb479ef50e89a80720da80c3f45cc3f17a5dff8c47d6a17f0f931b7314131",
+    "variants": [
+      {
+        "src": "/media/venues/statue-of-liberty-a1440e8d1237-240.webp",
+        "width": 240,
+        "height": 160,
+        "bytes": 5846
+      },
+      {
+        "src": "/media/venues/statue-of-liberty-a1440e8d1237-480.webp",
+        "width": 480,
+        "height": 320,
+        "bytes": 17118
+      },
+      {
+        "src": "/media/venues/statue-of-liberty-a1440e8d1237-960.webp",
+        "width": 960,
+        "height": 640,
+        "bytes": 55324
+      },
+      {
+        "src": "/media/venues/statue-of-liberty-a1440e8d1237-1600.webp",
+        "width": 1600,
+        "height": 1067,
+        "bytes": 124332
+      },
+      {
+        "src": "/media/venues/statue-of-liberty-a1440e8d1237-2600.webp",
+        "width": 2600,
+        "height": 1733,
+        "bytes": 238530
+      },
+      {
+        "src": "/media/venues/statue-of-liberty-a1440e8d1237-3200.webp",
+        "width": 3200,
+        "height": 2133,
+        "bytes": 314816
+      }
+    ]
+  },
+  {
+    "placeId": "A0577EDC-1035-46B5-8F99-61DB7E8037C6",
+    "venue": "Leslie-Lohman Museum of Art",
+    "asset": "leslie-lohman-c20c11026d17",
+    "title": "Leslie-Lohman Museum of Gay and Lesbian Art - NYC (48129032106)",
+    "alt": "Street corner outside the Leslie-Lohman Museum of Art in SoHo.",
+    "author": "Ajay Suresh",
+    "source": "https://commons.wikimedia.org/wiki/File:Leslie-Lohman_Museum_of_Gay_and_Lesbian_Art_-_NYC_(48129032106).jpg",
+    "sourceFile": "File:Leslie-Lohman Museum of Gay and Lesbian Art - NYC (48129032106).jpg",
+    "original": "https://upload.wikimedia.org/wikipedia/commons/e/ed/Leslie-Lohman_Museum_of_Gay_and_Lesbian_Art_-_NYC_%2848129032106%29.jpg",
+    "originalWidth": 4608,
+    "originalHeight": 2592,
+    "license": "CC BY 2.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/2.0",
+    "changes": "Resized, cropped to 3:2, converted to WebP; metadata stripped. No generated detail.",
+    "position": "50% 50%",
+    "buildSignature": "d802dc0c69fc7a40d79c9de5525a68287a04ba4577b3d893df2e7e2ed49ff30d",
+    "variants": [
+      {
+        "src": "/media/venues/leslie-lohman-c20c11026d17-240.webp",
+        "width": 240,
+        "height": 160,
+        "bytes": 14632
+      },
+      {
+        "src": "/media/venues/leslie-lohman-c20c11026d17-480.webp",
+        "width": 480,
+        "height": 320,
+        "bytes": 48560
+      },
+      {
+        "src": "/media/venues/leslie-lohman-c20c11026d17-960.webp",
+        "width": 960,
+        "height": 640,
+        "bytes": 161110
+      },
+      {
+        "src": "/media/venues/leslie-lohman-c20c11026d17-1600.webp",
+        "width": 1600,
+        "height": 1067,
+        "bytes": 389406
+      },
+      {
+        "src": "/media/venues/leslie-lohman-c20c11026d17-2600.webp",
+        "width": 2600,
+        "height": 1733,
+        "bytes": 892388
+      },
+      {
+        "src": "/media/venues/leslie-lohman-c20c11026d17-3200.webp",
+        "width": 3200,
+        "height": 2133,
+        "bytes": 1260656
+      }
+    ]
+  },
+  {
+    "placeId": "ABF5777A-1DE8-4F68-836C-147A63F0DA07",
+    "venue": "Whitney Museum of American Art",
+    "asset": "whitney-20307f56c853",
+    "title": "Whitney Museum from west",
+    "alt": "The Whitney Museum’s Gansevoort Street building, seen from the west.",
+    "author": "Beyond My Ken",
+    "source": "https://commons.wikimedia.org/wiki/File:Whitney_Museum_from_west.jpg",
+    "sourceFile": "File:Whitney Museum from west.jpg",
+    "original": "https://upload.wikimedia.org/wikipedia/commons/9/9a/Whitney_Museum_from_west.jpg",
+    "originalWidth": 3930,
+    "originalHeight": 3456,
+    "license": "CC BY-SA 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+    "changes": "Resized, cropped to 3:2, converted to WebP; metadata stripped. No generated detail.",
+    "position": "50% 45%",
+    "buildSignature": "cf9aa71ff5d7d5c37c9317c8901d2cfdc3901cc7ba5b6c524d2378c328f9c901",
+    "variants": [
+      {
+        "src": "/media/venues/whitney-20307f56c853-240.webp",
+        "width": 240,
+        "height": 160,
+        "bytes": 6384
+      },
+      {
+        "src": "/media/venues/whitney-20307f56c853-480.webp",
+        "width": 480,
+        "height": 320,
+        "bytes": 19766
+      },
+      {
+        "src": "/media/venues/whitney-20307f56c853-960.webp",
+        "width": 960,
+        "height": 640,
+        "bytes": 61826
+      },
+      {
+        "src": "/media/venues/whitney-20307f56c853-1600.webp",
+        "width": 1600,
+        "height": 1067,
+        "bytes": 150994
+      },
+      {
+        "src": "/media/venues/whitney-20307f56c853-2600.webp",
+        "width": 2600,
+        "height": 1733,
+        "bytes": 457448
+      },
+      {
+        "src": "/media/venues/whitney-20307f56c853-3200.webp",
+        "width": 3200,
+        "height": 2133,
+        "bytes": 677782
+      }
+    ]
+  },
+  {
+    "placeId": "E2C67B89-4050-4FA4-9E61-9ADC41730AE9",
+    "venue": "MoMA PS1",
+    "asset": "moma-ps1-4714be514ee5",
+    "title": "MoMA PS1 029",
+    "alt": "The brick exterior and arched windows of MoMA PS1 in Long Island City.",
+    "author": "Kidfly182",
+    "source": "https://commons.wikimedia.org/wiki/File:MoMA_PS1_029.jpg",
+    "sourceFile": "File:MoMA PS1 029.jpg",
+    "original": "https://upload.wikimedia.org/wikipedia/commons/e/e1/MoMA_PS1_029.jpg",
+    "originalWidth": 4608,
+    "originalHeight": 2072,
+    "license": "CC BY 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/4.0",
+    "changes": "Resized, cropped to 3:2, converted to WebP; metadata stripped. No generated detail.",
+    "position": "50% 50%",
+    "buildSignature": "4cd0f4c3e4c17ea7249248587bc0a90c8a7c593d112ad95524e2a968addfbee8",
+    "variants": [
+      {
+        "src": "/media/venues/moma-ps1-4714be514ee5-240.webp",
+        "width": 240,
+        "height": 160,
+        "bytes": 13536
+      },
+      {
+        "src": "/media/venues/moma-ps1-4714be514ee5-480.webp",
+        "width": 480,
+        "height": 320,
+        "bytes": 46574
+      },
+      {
+        "src": "/media/venues/moma-ps1-4714be514ee5-960.webp",
+        "width": 960,
+        "height": 640,
+        "bytes": 149808
+      },
+      {
+        "src": "/media/venues/moma-ps1-4714be514ee5-1600.webp",
+        "width": 1600,
+        "height": 1067,
+        "bytes": 307202
+      },
+      {
+        "src": "/media/venues/moma-ps1-4714be514ee5-2600.webp",
+        "width": 2600,
+        "height": 1733,
+        "bytes": 539074
+      },
+      {
+        "src": "/media/venues/moma-ps1-4714be514ee5-3200.webp",
+        "width": 3200,
+        "height": 2072,
+        "bytes": 694820
+      }
+    ]
+  },
+  {
+    "placeId": "86DF66A3-E994-435E-AC06-B29D7F1B8850",
+    "venue": "Strawberry Fields",
+    "asset": "strawberry-fields-0934282e23b9",
+    "title": "Imagine mosaic, Strawberry Fields, Central Park, Manhattan, New York",
+    "alt": "The Imagine mosaic at Strawberry Fields in Central Park.",
+    "author": "Christian David",
+    "source": "https://commons.wikimedia.org/wiki/File:Imagine_mosaic,_Strawberry_Fields,_Central_Park,_Manhattan,_New_York.jpg",
+    "sourceFile": "File:Imagine mosaic, Strawberry Fields, Central Park, Manhattan, New York.jpg",
+    "original": "https://upload.wikimedia.org/wikipedia/commons/6/6d/Imagine_mosaic%2C_Strawberry_Fields%2C_Central_Park%2C_Manhattan%2C_New_York.jpg",
+    "originalWidth": 7385,
+    "originalHeight": 4154,
+    "license": "CC BY-SA 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+    "changes": "Resized, cropped to 3:2, converted to WebP; metadata stripped. No generated detail.",
+    "position": "50% 50%",
+    "buildSignature": "a8752350bb1cdc557186cdd330959f293f056b1376abe4cccdd2dbfd474eaf79",
+    "variants": [
+      {
+        "src": "/media/venues/strawberry-fields-0934282e23b9-240.webp",
+        "width": 240,
+        "height": 160,
+        "bytes": 10660
+      },
+      {
+        "src": "/media/venues/strawberry-fields-0934282e23b9-480.webp",
+        "width": 480,
+        "height": 320,
+        "bytes": 37654
+      },
+      {
+        "src": "/media/venues/strawberry-fields-0934282e23b9-960.webp",
+        "width": 960,
+        "height": 640,
+        "bytes": 164890
+      },
+      {
+        "src": "/media/venues/strawberry-fields-0934282e23b9-1600.webp",
+        "width": 1600,
+        "height": 1067,
+        "bytes": 477266
+      },
+      {
+        "src": "/media/venues/strawberry-fields-0934282e23b9-2600.webp",
+        "width": 2600,
+        "height": 1733,
+        "bytes": 1173726
+      },
+      {
+        "src": "/media/venues/strawberry-fields-0934282e23b9-3200.webp",
+        "width": 3200,
+        "height": 2133,
+        "bytes": 1619970
+      }
+    ]
+  },
+  {
+    "placeId": "58A0AFC2-F091-4406-8CCB-0D2CA198649A",
+    "venue": "SUMMIT One Vanderbilt",
+    "asset": "summit-vanderbilt-e016e6457465",
+    "title": "Manhattan View",
+    "alt": "Manhattan’s skyline photographed from SUMMIT One Vanderbilt.",
+    "author": "RobMWhitaker",
+    "source": "https://commons.wikimedia.org/wiki/File:Manhattan_View.jpg",
+    "original": "https://upload.wikimedia.org/wikipedia/commons/8/89/Manhattan_View.jpg",
+    "originalWidth": 8256,
+    "originalHeight": 5504,
+    "license": "CC BY-SA 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+    "changes": "Resized, cropped to 3:2, converted to WebP; metadata stripped. No generated detail.",
+    "position": "50% 52%",
+    "sourceFile": "File:Manhattan View.jpg",
+    "buildSignature": "6d459c86c5a033213a346e1b61ccdbb54e4b8a0a568c560a8761287e4b234150",
+    "variants": [
+      {
+        "src": "/media/venues/summit-vanderbilt-e016e6457465-240.webp",
+        "width": 240,
+        "height": 160,
+        "bytes": 9772
+      },
+      {
+        "src": "/media/venues/summit-vanderbilt-e016e6457465-480.webp",
+        "width": 480,
+        "height": 320,
+        "bytes": 31494
+      },
+      {
+        "src": "/media/venues/summit-vanderbilt-e016e6457465-960.webp",
+        "width": 960,
+        "height": 640,
+        "bytes": 108276
+      },
+      {
+        "src": "/media/venues/summit-vanderbilt-e016e6457465-1600.webp",
+        "width": 1600,
+        "height": 1067,
+        "bytes": 261100
+      },
+      {
+        "src": "/media/venues/summit-vanderbilt-e016e6457465-2600.webp",
+        "width": 2600,
+        "height": 1733,
+        "bytes": 627712
+      },
+      {
+        "src": "/media/venues/summit-vanderbilt-e016e6457465-3200.webp",
+        "width": 3200,
+        "height": 2133,
+        "bytes": 953516
+      }
+    ]
+  },
+  {
+    "placeId": "4AEDB256-5AB4-4BD4-964D-FC5E0910C76F",
+    "venue": "Minskoff Theatre",
+    "asset": "minskoff-d04df5d3619f",
+    "title": "Minskoff Theatre (54076031902)",
+    "alt": "The illuminated entrance of the Minskoff Theatre on Broadway.",
+    "author": "ajay_suresh",
+    "source": "https://commons.wikimedia.org/wiki/File:Minskoff_Theatre_(54076031902).jpg",
+    "original": "https://upload.wikimedia.org/wikipedia/commons/b/b8/Minskoff_Theatre_%2854076031902%29.jpg",
+    "originalWidth": 4748,
+    "originalHeight": 2671,
+    "license": "CC BY 2.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/2.0",
+    "changes": "Resized, cropped to 3:2, converted to WebP; metadata stripped. No generated detail.",
+    "position": "50% 50%",
+    "sourceFile": "File:Minskoff Theatre (54076031902).jpg",
+    "buildSignature": "e9710f9c6f2b50987afe2a1c690243532e5c3a9d1c8749303c063a2be3b9ceb2",
+    "variants": [
+      {
+        "src": "/media/venues/minskoff-d04df5d3619f-240.webp",
+        "width": 240,
+        "height": 160,
+        "bytes": 10748
+      },
+      {
+        "src": "/media/venues/minskoff-d04df5d3619f-480.webp",
+        "width": 480,
+        "height": 320,
+        "bytes": 34274
+      },
+      {
+        "src": "/media/venues/minskoff-d04df5d3619f-960.webp",
+        "width": 960,
+        "height": 640,
+        "bytes": 139888
+      },
+      {
+        "src": "/media/venues/minskoff-d04df5d3619f-1600.webp",
+        "width": 1600,
+        "height": 1067,
+        "bytes": 479414
+      },
+      {
+        "src": "/media/venues/minskoff-d04df5d3619f-2600.webp",
+        "width": 2600,
+        "height": 1733,
+        "bytes": 1487704
+      },
+      {
+        "src": "/media/venues/minskoff-d04df5d3619f-3200.webp",
+        "width": 3200,
+        "height": 2133,
+        "bytes": 2274778
+      }
+    ]
+  },
+  {
+    "placeId": "7F1A2F4F-627F-419D-B80B-DD1E80E38023",
+    "venue": "Madame Tussauds New York",
+    "asset": "madame-tussauds-4b6b46b9800b",
+    "title": "0480New York City Madame Tussauds",
+    "alt": "The street entrance to Madame Tussauds New York on West 42nd Street.",
+    "author": "Laslovarga",
+    "source": "https://commons.wikimedia.org/wiki/File:0480New_York_City_Madame_Tussauds.JPG",
+    "original": "https://upload.wikimedia.org/wikipedia/commons/a/ab/0480New_York_City_Madame_Tussauds.JPG",
+    "originalWidth": 2592,
+    "originalHeight": 1944,
+    "license": "CC BY-SA 3.0",
+    "licenseUrl": "http://creativecommons.org/licenses/by-sa/3.0/",
+    "changes": "Resized, cropped to 3:2, converted to WebP; metadata stripped. No generated detail.",
+    "position": "50% 50%",
+    "sourceFile": "File:0480New York City Madame Tussauds.JPG",
+    "buildSignature": "a0535391892ce9c34821aada87e289003e24a33911f4feaf6227d8f53a588cb0",
+    "variants": [
+      {
+        "src": "/media/venues/madame-tussauds-4b6b46b9800b-240.webp",
+        "width": 240,
+        "height": 160,
+        "bytes": 10828
+      },
+      {
+        "src": "/media/venues/madame-tussauds-4b6b46b9800b-480.webp",
+        "width": 480,
+        "height": 320,
+        "bytes": 33184
+      },
+      {
+        "src": "/media/venues/madame-tussauds-4b6b46b9800b-960.webp",
+        "width": 960,
+        "height": 640,
+        "bytes": 98766
+      },
+      {
+        "src": "/media/venues/madame-tussauds-4b6b46b9800b-1600.webp",
+        "width": 1600,
+        "height": 1067,
+        "bytes": 213654
+      },
+      {
+        "src": "/media/venues/madame-tussauds-4b6b46b9800b-2592.webp",
+        "width": 2592,
+        "height": 1728,
+        "bytes": 447750
+      }
+    ]
+  }
+]

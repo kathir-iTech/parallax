@@ -10,6 +10,8 @@ The person answers what they would rather try. Up to three relative choices refi
 
 The experience rebuild adds original animated vector artwork, readable typography, explicit discovery/comparison/result stages, before-and-after ranking, reduced motion, and an on-demand map. Unchanged places retain their marker objects during selection; camera position survives view switches. See [experience and browser verification](docs/EXPERIENCE.md).
 
+Venue photography uses verified high-resolution originals and responsive WebP editions hosted with the app. Photo captions and the Photography dialog retain individual source and license credit. Unknown venues receive a clear placeholder without changing Qloo's shortlist. See [photography delivery and rights](docs/PHOTOGRAPHY.md).
+
 ## Run
 
 Node 24.x; use the committed npm lockfile.

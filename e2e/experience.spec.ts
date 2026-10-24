@@ -2,14 +2,19 @@ import { test, expect, type Page } from "@playwright/test";
 import { createRequire } from "node:module";
 import { advise } from "../core/engine.ts";
 import type { Evidence } from "../core/types.ts";
+import { venuePhotos } from "../src/photos.ts";
 const require = createRequire(import.meta.url);
 
 // Deliberately synthetic. No provider data, credentials, or live Qloo traffic.
-function fixture(): Evidence {
+function fixture(photographic = false): Evidence {
   const ids = Array.from(
     { length: 8 },
     (_, i) => `00000000-0000-4000-8000-${String(i + 1).padStart(12, "0")}`,
   );
+  if (photographic)
+    venuePhotos.slice(0, 8).forEach((p, i) => {
+      ids[i] = p.placeId;
+    });
   return {
     schema: 1,
     id: "00000000-0000-4000-9000-000000000001",
@@ -32,7 +37,7 @@ function fixture(): Evidence {
     ],
     places: ids.map((id, i) => ({
       id,
-      name: `Test place ${i + 1}`,
+      name: photographic ? venuePhotos[i].venue : `Test place ${i + 1}`,
       description:
         "Synthetic browser-test fixture. This is not a Qloo venue description.",
       category: "Test fixture",
@@ -54,8 +59,8 @@ function fixture(): Evidence {
   };
 }
 
-async function setup(page: Page) {
-  const evidence = fixture();
+async function setup(page: Page, photographic = false) {
+  const evidence = fixture(photographic);
   const requests: string[] = [];
   await page.route("**/api/**", async (route) => {
     const name = new URL(route.request().url()).pathname;
@@ -128,6 +133,113 @@ async function expectMapFillsFrame(page: Page) {
 }
 const center = (page: Page) =>
   page.locator(".real-map").getAttribute("data-map-center");
+
+test("verified responsive photography, credits, mobile crops and an honest failure state", async ({
+  browser,
+}) => {
+  const context = await browser.newContext({
+    viewport: { width: 1920, height: 1080 },
+    deviceScaleFactor: 2,
+  });
+  const page = await context.newPage();
+  const externalImages: string[] = [];
+  page.on("request", (request) => {
+    if (
+      request.resourceType() === "image" &&
+      new URL(request.url()).origin !== "http://127.0.0.1:4317"
+    )
+      externalImages.push(request.url());
+  });
+  try {
+    await setup(page, true);
+    await discover(page);
+    await expect(
+      page.locator('.comparison-option [data-photo-state="ready"]'),
+    ).toHaveCount(2);
+    expect(await page.locator(".comparison-option a").count()).toBe(0); // No links inside choice buttons.
+    await expect(
+      page.locator(
+        '.comparison-photo-credits a[href*="commons.wikimedia.org"]',
+      ),
+    ).toHaveCount(2);
+    await page
+      .getByRole("button", { name: "See my places", exact: true })
+      .click();
+    const hero = page.locator(".result-photo img");
+    await expect(
+      page.locator('.result-photo[data-photo-state="ready"]'),
+    ).toBeVisible();
+    const quality = await hero.evaluate((image) => {
+      const img = image as HTMLImageElement,
+        box = img.getBoundingClientRect();
+      const match = img.currentSrc.match(/-(\d+)\.webp$/);
+      return {
+        source: Number(match?.[1]),
+        required: box.width * devicePixelRatio,
+        srcSet: img.srcset,
+        loading: img.loading,
+        priority: img.fetchPriority,
+      };
+    });
+    expect(quality.source).toBeGreaterThanOrEqual(quality.required * 0.95);
+    expect(quality.source).toBeGreaterThanOrEqual(2600);
+    expect(quality.srcSet).toContain("3200w");
+    expect(quality.loading).toBe("eager");
+    expect(quality.priority).toBe("high");
+    await expect(
+      page.locator(
+        '.place-result > .photo-credit a[href*="creativecommons.org"]',
+      ),
+    ).toHaveCount(1);
+    await page.setViewportSize({ width: 390, height: 844 });
+    await expect(hero).toBeVisible();
+    expect(
+      await page.evaluate(
+        () => document.documentElement.scrollWidth <= innerWidth,
+      ),
+    ).toBe(true);
+    await page
+      .getByRole("button", { name: "Photography", exact: true })
+      .click();
+    await expect(page.getByRole("dialog")).toContainText("Cropped and resized");
+    await expect(page.locator(".photography-list article")).toHaveCount(
+      venuePhotos.length,
+    );
+    await page.keyboard.press("Escape");
+    // Block one new candidate's photograph. Never retain the previous venue's image.
+    const next = venuePhotos.find((p) => !quality.srcSet.includes(p.asset))!;
+    await page.route(`**/media/venues/${next.asset}-*.webp`, (route) =>
+      route.abort(),
+    );
+    await page.reload(); // Routing disables HTTP cache; exercise the failed asset from a new document.
+    await page.locator(".decision-grid").waitFor();
+    if (
+      await page
+        .getByRole("button", { name: "See my places", exact: true })
+        .count()
+    ) {
+      await page
+        .getByRole("button", { name: "See my places", exact: true })
+        .click();
+    }
+    await page.locator(".map-launch").click();
+    await page
+      .locator(".all-places button")
+      .filter({ hasText: next.venue })
+      .click();
+    await expect(
+      page.locator(
+        '.map-place-details > .place-image[data-photo-state="unavailable"]',
+      ),
+    ).toBeVisible();
+    await expect(
+      page.locator(".map-place-details > .place-image img"),
+    ).toHaveCount(0);
+    expect(externalImages).toEqual([]);
+  } finally {
+    await context.close();
+  }
+});
 
 test("readable entry, no eager map, mobile fit and complete data removal", async ({
   page,

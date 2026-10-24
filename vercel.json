@@ -6,11 +6,20 @@
   "functions": { "api/**/*.ts": { "maxDuration": 120 } },
   "rewrites": [
     {
-      "source": "/((?!api/|assets/|favicon.svg).*)",
+      "source": "/((?!api/|assets/|media/|favicon.svg).*)",
       "destination": "/index.html"
     }
   ],
   "headers": [
+    {
+      "source": "/media/venues/(.*).webp",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=31536000, immutable"
+        }
+      ]
+    },
     {
       "source": "/(.*)",
       "headers": [

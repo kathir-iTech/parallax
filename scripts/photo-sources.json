@@ -1,0 +1,137 @@
+[
+  {
+    "placeId": "50E6FD1D-FA14-4383-A7E9-FDEC343EDD8A",
+    "venue": "Top of The Rock",
+    "slug": "top-of-the-rock",
+    "file": "File:Sunset from Top of The Rock, Rockefeller Center (51197172512).jpg",
+    "alt": "Sunset over Manhattan, photographed from the Top of the Rock observation deck.",
+    "crop": "centre",
+    "position": "50% 52%"
+  },
+  {
+    "placeId": "5FAFC6A6-45DB-4AC6-80B3-D7BD558420A8",
+    "venue": "Solomon R. Guggenheim Museum",
+    "slug": "guggenheim",
+    "file": "File:Solomon R. Guggenheim Museum (48059131351).jpg",
+    "alt": "Frank Lloyd Wright’s spiral Guggenheim Museum facade on Fifth Avenue.",
+    "crop": "centre",
+    "position": "50% 50%"
+  },
+  {
+    "placeId": "56674AEE-A6BD-4C0A-AD13-A6989B2D9054",
+    "venue": "Brooklyn Bridge",
+    "slug": "brooklyn-bridge",
+    "file": "File:Brooklyn Bridge August 2017.jpg",
+    "alt": "Brooklyn Bridge’s pedestrian walkway and suspension cables above the East River.",
+    "crop": "centre",
+    "position": "50% 48%"
+  },
+  {
+    "placeId": "C41DBC4D-2F87-4298-A566-7DFA9B5143D1",
+    "venue": "Empire State Building",
+    "slug": "empire-state",
+    "file": "File:View of Empire State Building from Rockefeller Center New York City dllu.jpg",
+    "alt": "The Empire State Building illuminated against Manhattan’s evening skyline.",
+    "crop": "centre",
+    "position": "50% 48%"
+  },
+  {
+    "placeId": "994B684A-EE05-4B45-9833-B8F212192E50",
+    "venue": "Columbia University Libraries",
+    "slug": "butler-library",
+    "file": "File:Butler Library Columbia University.jpg",
+    "alt": "Butler Library, part of Columbia University Libraries, viewed across the campus lawn.",
+    "crop": "centre",
+    "position": "50% 50%"
+  },
+  {
+    "placeId": "CFA32EED-3DEB-41C6-A827-A7B3CA88FADB",
+    "venue": "New Museum",
+    "slug": "new-museum",
+    "file": "File:New Museum in New York City 2015.JPG",
+    "alt": "The stacked architectural volumes of the New Museum’s Bowery building in 2015.",
+    "crop": "north",
+    "position": "50% 35%"
+  },
+  {
+    "placeId": "FF8A43D9-BCD9-4B86-B5B6-6692EAFCEE1D",
+    "venue": "One World Trade Center",
+    "slug": "one-world-trade-center",
+    "file": "File:One World Trade Center and New York Sunset.jpg",
+    "alt": "One World Trade Center rising above Lower Manhattan at sunset.",
+    "crop": "centre",
+    "position": "50% 45%"
+  },
+  {
+    "placeId": "B2B057E1-F085-4B83-9C24-ED0110F8BEA2",
+    "venue": "Statue of Liberty",
+    "slug": "statue-of-liberty",
+    "file": "File:Statue of Liberty, NY.jpg",
+    "alt": "The Statue of Liberty and its pedestal on Liberty Island, New York Harbor.",
+    "crop": "centre",
+    "position": "50% 42%"
+  },
+  {
+    "placeId": "A0577EDC-1035-46B5-8F99-61DB7E8037C6",
+    "venue": "Leslie-Lohman Museum of Art",
+    "slug": "leslie-lohman",
+    "file": "File:Leslie-Lohman Museum of Gay and Lesbian Art - NYC (48129032106).jpg",
+    "alt": "Street corner outside the Leslie-Lohman Museum of Art in SoHo.",
+    "crop": "centre",
+    "position": "50% 50%"
+  },
+  {
+    "placeId": "ABF5777A-1DE8-4F68-836C-147A63F0DA07",
+    "venue": "Whitney Museum of American Art",
+    "slug": "whitney",
+    "file": "File:Whitney Museum from west.jpg",
+    "alt": "The Whitney Museum’s Gansevoort Street building, seen from the west.",
+    "crop": "centre",
+    "position": "50% 45%"
+  },
+  {
+    "placeId": "E2C67B89-4050-4FA4-9E61-9ADC41730AE9",
+    "venue": "MoMA PS1",
+    "slug": "moma-ps1",
+    "file": "File:MoMA PS1 029.jpg",
+    "alt": "The brick exterior and arched windows of MoMA PS1 in Long Island City.",
+    "crop": "centre",
+    "position": "50% 50%"
+  },
+  {
+    "placeId": "86DF66A3-E994-435E-AC06-B29D7F1B8850",
+    "venue": "Strawberry Fields",
+    "slug": "strawberry-fields",
+    "file": "File:Imagine mosaic, Strawberry Fields, Central Park, Manhattan, New York.jpg",
+    "alt": "The Imagine mosaic at Strawberry Fields in Central Park.",
+    "crop": "centre",
+    "position": "50% 50%"
+  },
+  {
+    "placeId": "58A0AFC2-F091-4406-8CCB-0D2CA198649A",
+    "venue": "SUMMIT One Vanderbilt",
+    "slug": "summit-vanderbilt",
+    "file": "File:Manhattan View.jpg",
+    "alt": "Manhattan’s skyline photographed from SUMMIT One Vanderbilt.",
+    "crop": "centre",
+    "position": "50% 52%"
+  },
+  {
+    "placeId": "4AEDB256-5AB4-4BD4-964D-FC5E0910C76F",
+    "venue": "Minskoff Theatre",
+    "slug": "minskoff",
+    "file": "File:Minskoff Theatre (54076031902).jpg",
+    "alt": "The illuminated entrance of the Minskoff Theatre on Broadway.",
+    "crop": "centre",
+    "position": "50% 50%"
+  },
+  {
+    "placeId": "7F1A2F4F-627F-419D-B80B-DD1E80E38023",
+    "venue": "Madame Tussauds New York",
+    "slug": "madame-tussauds",
+    "file": "File:0480New York City Madame Tussauds.JPG",
+    "alt": "The street entrance to Madame Tussauds New York on West 42nd Street.",
+    "crop": "centre",
+    "position": "50% 50%"
+  }
+]

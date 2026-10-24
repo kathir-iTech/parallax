@@ -1,6 +1,15 @@
 # Release verification
 
-Checked 23 October 2026. Each evidence class below is kept separate.
+Checked 24 October 2026. Each evidence class below is kept separate.
+
+## Photography upgrade — v1.2.0
+
+- Fifteen independently matched photographs ship in 89 responsive WebP editions, up to 3200px wide. Image source, license, author and modifications are recorded in the photo catalog and credited in the interface.
+- Eighteen unit/HTTP/asset tests verify the existing decision and API contracts and fully decode every image edition. They check dimensions, rights metadata, exact identity lookup, and byte budgets.
+- Eight browser regression cases include actual responsive source selection at 1920px and 2× pixel density, comparison attribution outside choice buttons, mobile layout, full photo credits, and blocked-image fallback without retaining the previous venue's photograph. Existing map, comparison, restoration, motion and contrast checks remain in the suite.
+- The production build passes. The deferred MapLibre chunk remains a known size tradeoff. No paid provider, runtime image API or billing upgrade was added.
+
+Browser backend responses remain marked synthetic fixtures. Photographic fixture identities select actual committed licensed assets; they do not establish a live Qloo recommendation. Deployed live API and image delivery observations belong in the owner-facing release evidence. See [photography delivery and rights](PHOTOGRAPHY.md).
 
 ## Experience rebuild — v1.1.0
 
