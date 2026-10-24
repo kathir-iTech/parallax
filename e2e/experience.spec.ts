@@ -138,7 +138,7 @@ test("verified responsive photography, credits, mobile crops and an honest failu
   browser,
 }) => {
   const context = await browser.newContext({
-    viewport: { width: 1920, height: 1080 },
+    viewport: { width: 390, height: 844 },
     deviceScaleFactor: 2,
   });
   const page = await context.newPage();
@@ -156,6 +156,18 @@ test("verified responsive photography, credits, mobile crops and an honest failu
     await expect(
       page.locator('.comparison-option [data-photo-state="ready"]'),
     ).toHaveCount(2);
+    for (const img of await page.locator(".comparison-option img").all()) {
+      const crop = await img.evaluate((el) => {
+        const photo = el as HTMLImageElement;
+        return {
+          pixels:
+            (Number(photo.currentSrc.match(/-(\d+)\.webp$/)?.[1]) * 2) / 3,
+          required: photo.clientHeight * devicePixelRatio,
+        };
+      });
+      expect(crop.pixels).toBeGreaterThanOrEqual(crop.required * 0.95);
+    }
+    await page.setViewportSize({ width: 1920, height: 1080 });
     expect(await page.locator(".comparison-option a").count()).toBe(0); // No links inside choice buttons.
     await expect(
       page.locator(

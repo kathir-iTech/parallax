@@ -29,7 +29,7 @@ export const photoSizes: Record<PhotoUse, string> = {
   result:
     "(max-width: 600px) calc(100vw - 40px), (max-width: 900px) calc(100vw - 60px), (max-width: 1180px) calc(100vw - 387px), calc(100vw - 482px)",
   comparison:
-    "(max-width: 600px) max(240px, 50vw), (max-width: 900px) calc((100vw - 80px) / 2), (max-width: 1180px) calc((100vw - 401px) / 2), calc((100vw - 502px) / 2)",
+    "(max-width: 600px) max(400px, 70vw), (max-width: 900px) calc((100vw - 80px) / 2), (max-width: 1180px) calc((100vw - 401px) / 2), calc((100vw - 502px) / 2)",
   thumbnail: "100px",
   map: "(max-width: 600px) calc(100vw - 80px), (max-width: 900px) 200px, 280px",
 };
