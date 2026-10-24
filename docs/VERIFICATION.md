@@ -2,6 +2,10 @@
 
 Checked 24 October 2026. Each evidence class below is kept separate.
 
+## Public agent demonstration
+
+`npm run demo:agent` was checked against the deployed public backend on 24 October 2026. It used an actual MCP stdio client, confirmed Radiohead and The Grand Budapest Hotel through Qloo, prepared ten places, applied one declared sample A answer, checked exact restoration after answer removal, and removed its temporary evidence. No LLM was invoked. The script is executable evidence of the protocol path, not a human preference study or a language-model-generated tool call.
+
 ## Photography upgrade — v1.2.0
 
 - Fifteen independently matched photographs ship in 89 responsive WebP editions, up to 3200px wide. Image source, license, author and modifications are recorded in the photo catalog and credited in the interface.

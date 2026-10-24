@@ -1,77 +1,133 @@
-# PARALLAX
+<p align="center">
+  <a href="https://parallax-culture.vercel.app">
+    <picture>
+      <source media="(prefers-reduced-motion: reduce)" srcset="docs/assets/parallax-cover.png">
+      <img src="docs/assets/parallax-motion.gif" alt="PARALLAX. Your culture. A different city. Two familiar cultural references become a place to try." width="100%">
+    </picture>
+  </a>
+</p>
 
-**Find a place through the things you love.**
+<p align="center">
+  <strong>A Qloo-powered agentic tool for choosing one place to try.</strong><br>
+  <a href="https://parallax-culture.vercel.app">Open the studio ↗</a> ·
+  <a href="docs/DEMO.md">Try the workflow</a> ·
+  <a href="docs/AGENT.md">Connect an agent</a> ·
+  <a href="docs/VERIFICATION.md">Inspect the evidence</a>
+</p>
 
-[Open the studio](https://parallax-culture.vercel.app) · [Connect an agent](docs/AGENT.md) · [Inspect the methodology](docs/METHODOLOGY.md)
+<p align="center">
+  <a href="https://github.com/kathir-iTech/parallax/actions/workflows/verify.yml"><img src="https://github.com/kathir-iTech/parallax/actions/workflows/verify.yml/badge.svg" alt="Automated verification status"></a>
+  &nbsp; <a href="LICENSE">MIT source</a> &nbsp;·&nbsp; <a href="docs/assets/parallax-cover.png">Still cover</a>
+</p>
 
-PARALLAX is a Qloo-powered place-choice studio and agentic tool. Start with two or three familiar artists or films. Qloo discovers New York places and ranks one shared shortlist through each cultural reference. When those perspectives disagree, a small exact decision model chooses a comparison that could change the recommendation.
+## A favorite artist. A film that stays with you. Where next?
 
-The person answers what they would rather try. Up to three relative choices refine the shortlist. They can also skip, accept both, veto neither-for-this-outing options, change an answer, remove it, and rebuild the decision. The experience puts large comparison cards and a visibly changing shortlist first. Open the city map or cultural-connections plot when geographic context or ranking evidence helps.
+You know what you love. You may not know which New York place to try.
 
-The experience rebuild adds original animated vector artwork, readable typography, explicit discovery/comparison/result stages, before-and-after ranking, reduced motion, and an on-demand map. Unchanged places retain their marker objects during selection; camera position survives view switches. See [experience and browser verification](docs/EXPERIENCE.md).
+PARALLAX turns two or three familiar artists or films into one shared shortlist. Qloo discovers places and ranks that same shortlist through each cultural reference. When those perspectives disagree, an exact decision model selects a comparison that could help you choose.
 
-Venue photography uses verified high-resolution originals and responsive WebP editions hosted with the app. Photo captions and the Photography dialog retain individual source and license credit. Unknown venues receive a clear placeholder without changing Qloo's shortlist. See [photography delivery and rights](docs/PHOTOGRAPHY.md).
+**Your answer can change the recommendation. Removing it rebuilds the decision.**
 
-## Run
+![Actual PARALLAX studio with a selected place, high-resolution venue photograph, cultural references and an editable shortlist.](docs/assets/studio.webp)
 
-Node 24.x; use the committed npm lockfile.
+_Actual studio capture using restored Qloo observations. Header animation is an original workflow illustration. Venue-photo credits remain visible in the studio and are documented in [attribution](docs/ATTRIBUTION.md)._
+
+## Follow one decision
+
+| Bring                                                                             | Compare                                                               | Choose                                                                              |
+| :-------------------------------------------------------------------------------- | :-------------------------------------------------------------------- | :---------------------------------------------------------------------------------- |
+| Confirm two artists or films. Qloo supplies cultural associations across domains. | Answer a useful A/B question. Both, neither and skip remain distinct. | Inspect a place, explore the city map, correct an answer, or save your preferences. |
+
+Try **Radiohead × Grand Budapest** in the [live studio](https://parallax-culture.vercel.app). Choose **Find my places**, answer a comparison, then open **1 choice** beside the history icon and remove that answer. Inspect what changes. No login, purchase or judge-supplied API key is needed for the hosted studio. [Exact walkthrough →](docs/DEMO.md)
+
+## Qloo is the foundation
+
+```mermaid
+flowchart LR
+  A[Confirmed artists / films] --> B[Qloo place discovery]
+  B --> C[One shared shortlist]
+  C --> D[Qloo ranks each cultural lens]
+  D --> E[Exact comparison selection]
+  E --> F[An explicit human choice]
+  F --> G[Updated shortlist + map]
+  F --> E
+```
+
+Qloo provides both discovery and reference-conditioned rankings. Without those inputs, this workflow cannot prepare its culturally grounded candidate set. The adapter preserves the official discovery and supplied-shortlist contracts; it does not claim to execute the native Qloo harness.
+
+- **One common set:** at most ten place identities, with coordinates in the supported New York area and coverage under every cultural lens. Missing ranks stay missing.
+- **A question with a purpose:** a finite preference model evaluates expected reduction in modeled decision regret. Up to three relative choices; it can stop earlier.
+- **A decision you can correct:** answers are recomputed from a clean prior when changed or removed. Neither creates reversible current-outing vetoes; both and skip invent no relative preference.
+- **A complete studio:** comparisons, animated shortlist, before/after view, map, evidence, local preferences, field notes, and responsive licensed photography.
+
+[Decision methodology](docs/METHODOLOGY.md) · [Experience design](docs/EXPERIENCE.md) · [Photography](docs/PHOTOGRAPHY.md)
+
+## Give an agent the same tool
+
+The `parallax_advise` MCP tool exposes `resolve`, `prepare`, `advise` and `forget` over one local stdio bridge to the public HTTPS backend. An assistant can obtain a comparison and ask the person to answer it. Supplied answers use the same decision engine as the studio.
+
+After installing dependencies, run a real protocol demonstration:
+
+```sh
+npm run demo:agent
+```
+
+It confirms declared sample identities through Qloo, prepares a shared shortlist, applies a **scripted demonstration answer**, removes it, verifies the original decision is restored, and forgets temporary evidence. No key is printed or required by the public tool user. This is an actual MCP client invocation; **no LLM is invoked by this demonstration**. It consumes the public service's finite provider allowance.
+
+[Connect your MCP client →](docs/AGENT.md)
+
+## Run locally
+
+Node **24.x** and the committed npm lockfile are required. Self-hosting needs your own authorized Qloo credential, a Postgres database, and a random session secret. The hosted studio already has its own configured backend.
 
 ```sh
 npm ci
 cp .env.example .env.local
-# Set QLOO_API_KEY, SESSION_SECRET (32+ characters), DATABASE_URL privately.
-# Apply server/migration.sql to a dedicated Postgres database.
+# Set QLOO_API_KEY (or QLOO_KEY_FILE), SESSION_SECRET and DATABASE_URL privately.
+# Apply server/migration.sql to your dedicated Postgres database.
 npm run dev
 ```
 
-Open the printed local URL. No API keys are placed in browser configuration. `QLOO_KEY_FILE` can point to a private local file instead of embedding the credential in `.env.local`.
+Open the URL printed by the server. Credentials stay on the server. [Configuration, database setup and quotas →](docs/OPERATIONS.md)
+
+## Evidence you can reproduce
 
 ```sh
-npm run test
-npm run evaluate
-npm run build
-npm run mcp
-```
-
-For browser regression tests, install Playwright's Chromium once, then run:
-
-```sh
+npm test                 # Decision, HTTP and photographic-asset checks
+npm run evaluate         # Seeded synthetic comparisons; not a human study
+npm run build            # TypeScript + production client
 npx playwright install chromium
-npm run test:browser
+npm run test:browser     # Actual UI + MapLibre with synthetic API fixtures
 ```
 
-These browser tests intercept every API request with explicitly synthetic fixtures, and use a deterministic map style with the real MapLibre renderer. They require no Qloo key, database, provider credits, or paid service. Windows can use an existing standard Chrome installation; `PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH` can override the executable. For diagnostic traces, run `npm run test:browser -- --trace on`.
+| Evidence                    | What it establishes                                                                                     |
+| :-------------------------- | :------------------------------------------------------------------------------------------------------ |
+| 18 unit/HTTP/asset tests    | Independent decision oracle, answer semantics, scoped API boundaries, and 89 decodable image editions   |
+| 8 browser cases             | Comparison/undo, save/restore, map control and recovery, mobile/retina photography, motion and contrast |
+| 1,600 synthetic executions  | Declared policies and preference generators, including unfavorable comparisons and model mismatch       |
+| Deployed integration checks | Actual Qloo retrieval, browser flow, and MCP protocol behavior; recorded separately from fixtures       |
 
-## Architecture
+The [verification record](docs/VERIFICATION.md) states the scope and limits. Synthetic results do not establish human enjoyment or universal recommendation superiority. Automated accessibility checks are not a full accessibility certification.
 
-| Layer                              | Responsibility                                                                                     |
-| ---------------------------------- | -------------------------------------------------------------------------------------------------- |
-| React / Vite studio                | Identity confirmation, mapped results, pairwise choices, local state, correction, export/import    |
-| `core/`                            | Pure TypeScript finite preference model, modeled regret, exact comparison selection, stop rules    |
-| `server/qloo.ts`                   | Direct Qloo API adapter, actual typed identities, bounded discovery and supplied-shortlist ranking |
-| `server/handler.ts`                | Signed sessions and reference proofs, admission, scoped evidence handles, errors                   |
-| Postgres ledger                    | Atomic shared quota reservation, short leases, thirty-minute normalized provider evidence          |
-| `agent/bridge.ts`                  | One MCP stdio tool over the same public HTTPS API and decision engine                              |
-| `tests/` and `scripts/evaluate.ts` | Independent oracle checks, failure boundaries, reproducible synthetic comparisons                  |
+## Inside the repository
 
-This is a direct API adapter based on the official Qloo workflow contracts. It does not execute or claim to be the native Qloo harness. Supplied-shortlist ranking is capped at ten identities. No mandatory runtime LLM, model subscription, paid map API, user account, or personal profile server is needed.
+| Path                                | Responsibility                                                              |
+| :---------------------------------- | :-------------------------------------------------------------------------- |
+| [`src/`](src/)                      | React studio, MapLibre explorer, local preferences, photo catalog           |
+| [`core/`](core/)                    | Pure TypeScript model, exact comparison selection, stop rules               |
+| [`server/`](server/)                | Qloo adapter, signed sessions, input validation, atomic shared quota ledger |
+| [`agent/`](agent/)                  | MCP stdio bridge to the public HTTPS backend                                |
+| [`tests/`](tests/) · [`e2e/`](e2e/) | Decision, API, asset and browser verification                               |
+| [`docs/`](docs/)                    | Methodology, operation, evaluation, integration and attribution             |
 
-## Decision model
+## Boundaries that matter
 
-Within the common covered set, transform each cultural ranking into an ordinal feature `(m - 1 - position)/(m - 1)`. This application-defined utility surrogate is not a Qloo probability. A uniform finite prior spans weights on a 0.1 simplex grid: 11 hypotheses for two references; 66 for three. A logistic A/B likelihood with noise 0.18 updates hypothesis weights exactly.
+The first edition helps someone choose **one New York place to try**. Cultural association does not certify enjoyment, opening hours, entry conditions, accessibility or safety. The studio does not book venues or infer sensitive traits.
 
-The next pair maximizes expected reduction in modeled decision regret. A declared interaction threshold of 0.002, a three-relative-answer cap, two consecutive skips, and an eight-interaction safety cap can stop questioning. Both/skip do not fabricate relative preference; neither vetoes both in the current context. Model state is always recomputed from retained answers.
+Studio preferences stay in IndexedDB on the person's device. The MCP bridge transmits explicitly supplied answers for transient backend computation; it creates no remote personal profile. Session-scoped provider evidence expires after thirty minutes. Exported preferences exclude credentials and bulk provider content.
 
-See [methodology](docs/METHODOLOGY.md), [agent integration](docs/AGENT.md), and [evaluation](docs/evaluation/SYNTHETIC.md).
+Runtime operation requires no mandatory generative model, paid map API, or image subscription. Provider grants and free-service allowances remain finite. Unknown or ambiguous venues keep their Qloo ranking and receive an explicit photo placeholder. [Privacy and operation →](docs/OPERATIONS.md)
 
-## Evidence and limitations
+## License
 
-Qloo cultural association is meaningful input to this application, but does not certify enjoyment or current venue conditions. Verify entry, opening, accessibility, prices, and availability directly. The first edition admits places in a bounded New York area, rejects known closed places and missing coordinates, and requires at least six places ranked under every cultural lens. Missing results are not dislikes.
-
-Synthetic stress experiments and a real provider integration check are different evidence classes. Neither is an independent human study, a winning guarantee, or a reliability percentage. Familiarity, small candidate pools, linear ordinal utilities, and response noise remain limitations.
-
-## Privacy, cost and licensing
-
-Answers and an explicit balance when set stay in browser-managed local storage for the studio. The agent tool explicitly sends supplied answers for transient backend computation; it does not create a remote personal profile. Thirty-minute provider-evidence handles are session scoped. Preference exports contain references, answers, and optional explicit balance, not API keys, provider images, descriptions, or a claim of fresh evidence. See [privacy and operation](docs/OPERATIONS.md).
-
-The source is MIT licensed. Third-party fonts, map software, map data and Qloo content retain their own licenses and terms; the MIT license does not relicense provider data. See [attribution](docs/ATTRIBUTION.md).
+Application source: [MIT](LICENSE), Kathirvel R. Third-party photography, fonts, map software, map data, and Qloo content retain their individual licenses and terms. [Attribution and rights →](docs/ATTRIBUTION.md)

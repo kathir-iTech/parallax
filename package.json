@@ -15,7 +15,9 @@
     "mcp": "tsx agent/bridge.ts",
     "check": "tsc -b",
     "test:browser": "playwright test",
-    "photos:build": "tsx scripts/build-photos.ts"
+    "photos:build": "tsx scripts/build-photos.ts",
+    "demo:agent": "tsx scripts/demo-agent.ts",
+    "readme:assets": "node scripts/readme/render.mjs"
   },
   "dependencies": {
     "@fontsource/dm-sans": "^5.3.0",

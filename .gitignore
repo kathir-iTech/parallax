@@ -11,4 +11,3 @@ private/
 *.tsbuildinfo
 .agents/
 skills-lock.json
-!.env.example
